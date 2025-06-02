@@ -1,0 +1,11 @@
+/Users/lilyanchauveau/java/resa/back/src/main/java/com/resa/api/security/JwtService.java
+/Users/lilyanchauveau/java/resa/back/src/main/java/com/resa/api/model/Travel.java
+/Users/lilyanchauveau/java/resa/back/src/main/java/com/resa/api/security/JwtAuthenticationFilter.java
+/Users/lilyanchauveau/java/resa/back/src/main/java/com/resa/api/repository/UserRepository.java
+/Users/lilyanchauveau/java/resa/back/src/main/java/com/resa/api/model/User.java
+/Users/lilyanchauveau/java/resa/back/src/main/java/com/resa/api/config/ApplicationConfig.java
+/Users/lilyanchauveau/java/resa/back/src/main/java/com/resa/api/model/Vehicle.java
+/Users/lilyanchauveau/java/resa/back/src/main/java/com/resa/api/ResaApplication.java
+/Users/lilyanchauveau/java/resa/back/src/main/java/com/resa/api/security/Role.java
+/Users/lilyanchauveau/java/resa/back/src/main/java/com/resa/api/model/Boat.java
+/Users/lilyanchauveau/java/resa/back/src/main/java/com/resa/api/config/SecurityConfig.java
