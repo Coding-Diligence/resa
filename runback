@@ -111,6 +111,24 @@ logs_db() {
     cd ..
 }
 
+# Fonction pour exécuter l'application complète
+run() {
+    print_message "Démarrage de l'environnement complet..."
+    
+    # Démarrer la base de données
+    start_db
+    
+    # Démarrer l'application
+    start_app &
+    APP_PID=$!
+    
+    # Gérer le Ctrl+C
+    trap 'print_message "Arrêt de l environnement..."; stop_app; stop_db; exit 0' INT
+    
+    # Attendre que l'application se termine
+    wait $APP_PID
+}
+
 # Gestion des arguments
 case "$1" in
     "start")
@@ -139,9 +157,12 @@ case "$1" in
     "db:logs")
         logs_db
         ;;
+    "run")
+        run
+        ;;
     *)
         echo "Invalid option: $1"
-        echo "Usage: $0 {start|stop|restart|build|db:start|db:stop|db:restart|db:logs}"
+        echo "Usage: $0 {start|stop|restart|build|db:start|db:stop|db:restart|db:logs|run}"
         echo "Commands:"
         echo "  start       - Start the application"
         echo "  stop        - Stop the application"
@@ -151,6 +172,7 @@ case "$1" in
         echo "  db:stop     - Stop the database"
         echo "  db:restart  - Restart the database"
         echo "  db:logs     - Show database logs"
+        echo "  run         - Start database and application with Ctrl+C handling"
         exit 1
         ;;
 esac 
