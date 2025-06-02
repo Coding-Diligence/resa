@@ -1,2 +1,3 @@
-/database/data
+database/data
 .DS_Store
+back/target/
