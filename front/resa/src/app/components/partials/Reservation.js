@@ -1,7 +1,7 @@
 export default function Reservation() {
     return (
         <form className="w-3/4 p-6 relative top-down bg-sky-950/70 rounded-2xl shadow-md">
-            <h2 className="text-2xl font-bold mb-6 text-center">Réserver un espace</h2>
+            <h2 className="text-2xl font-bold mb-6 text-center">Programmer un voyage</h2>
             <div className="mb-4 flex flex-row ">
                 <div className="flex flex-col w-full">
                     <label htmlFor="name" className="block text-sm font-medium text-gray-300">Destination</label>
@@ -38,7 +38,6 @@ export default function Reservation() {
                         </div>
                     </div>
                 </div>
-            
-        </form>
+        </form>   
     );
 }
