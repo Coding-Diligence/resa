@@ -2,15 +2,18 @@ package com.resa.api.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import java.util.List;
 
 @Data
 @Entity
 @Table(name = "vehicle")
-public class Vehicle {
+@EqualsAndHashCode(callSuper = true)
+public class Vehicle extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(columnDefinition = "INT UNSIGNED")
+    private Integer id;
 
     @Column(nullable = false)
     private String registration;
