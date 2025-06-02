@@ -1,0 +1,171 @@
+#!/bin/bash
+
+# Couleurs pour les messages
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# Contextes
+CONTEXT_BACK="back"
+CONTEXT_DATABASE="database"
+CONTEXT_FRONT="front"
+CONTEXT_APP_NAME="resa"
+
+# Fonction pour afficher les messages
+print_message() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+# Fonction pour afficher les erreurs
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Fonction pour afficher les avertissements
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+# Vérifier si Maven est installé
+if ! command -v mvn &> /dev/null; then
+    print_warning "Maven n'est pas installé."
+    read -p "Voulez-vous l'installer maintenant ? (y/n) " INSTALL_MAVEN
+    if [[ $INSTALL_MAVEN == "y" ]]; then
+        print_message "Installation de Maven..."
+        sudo apt-get update
+        sudo apt-get install -y maven
+    else
+        print_error "Maven est requis pour exécuter l'application."
+        exit 1
+    fi
+fi
+
+# Vérifier si Java est installé
+if ! command -v java &> /dev/null; then
+    print_error "Java n'est pas installé. Veuillez l'installer d'abord."
+    exit 1
+fi
+
+# Vérifier si Docker est installé
+if ! command -v docker &> /dev/null; then
+    print_error "Docker n'est pas installé. Veuillez l'installer d'abord."
+    exit 1
+fi
+
+# Fonction pour démarrer l'application
+start_app() {
+    print_message "Démarrage de l'application ${GREEN}${CONTEXT_APP_NAME}${NC}..."
+    cd $CONTEXT_BACK
+    mvn spring-boot:run
+    cd ..
+}
+
+# Fonction pour nettoyer et compiler
+clean_build() {
+    print_message "Nettoyage et compilation du projet..."
+    cd $CONTEXT_BACK
+    mvn clean install
+    cd ..
+}
+
+# Fonction pour arrêter l'application
+stop_app() {
+    print_message "Arrêt de l'application ${GREEN}${CONTEXT_APP_NAME}${NC}..."
+    pkill -f "spring-boot:run"
+}
+
+# Fonction pour démarrer la base de données
+start_db() {
+    print_message "Démarrage de la base de données..."
+    cd $CONTEXT_DATABASE
+    docker-compose up -d
+    cd ..
+}
+
+# Fonction pour arrêter la base de données
+stop_db() {
+    print_message "Arrêt de la base de données..."
+    cd $CONTEXT_DATABASE
+    docker-compose down
+    cd ..
+}
+
+# Fonction pour redémarrer la base de données
+restart_db() {
+    stop_db
+    sleep 2
+    start_db
+}
+
+# Fonction pour voir les logs de la base de données
+logs_db() {
+    print_message "Affichage des logs de la base de données..."
+    cd $CONTEXT_DATABASE
+    docker-compose logs -f
+    cd ..
+}
+
+# Fonction pour exécuter l'application complète
+run() {
+    print_message "Démarrage de l'environnement complet ${GREEN}${CONTEXT_APP_NAME}${NC}..."
+    start_db
+    start_app &
+    APP_PID=$!
+
+    # Gérer le Ctrl+C
+    trap 'kill $APP_PID; stop_app; stop_db; exit' INT
+    wait $APP_PID
+}
+
+# Gestion des arguments
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 {start|stop|restart|build|db:start|db:stop|db:restart|db:logs|run}"
+    echo "Commands:"
+    echo "  start       - Start the application"
+    echo "  stop        - Stop the application"
+    echo "  restart     - Restart the application"
+    echo "  build       - Clean and build the application"
+    echo "  db:start    - Start the database"
+    echo "  db:stop     - Stop the database"
+    echo "  db:restart  - Restart the database"
+    echo "  db:logs     - Show database logs"
+    echo "  run         - Start database and application with Ctrl+C handling"
+    exit 1
+fi
+
+case "$1" in
+    "start")
+        start_app
+        ;;
+    "stop")
+        stop_app
+        ;;
+    "restart")
+        stop_app
+        sleep 2
+        start_app
+        ;;
+    "build")
+        clean_build
+        ;;
+    "db:start")
+        start_db
+        ;;
+    "db:stop")
+        stop_db
+        ;;
+    "db:restart")
+        restart_db
+        ;;
+    "db:logs")
+        logs_db
+        ;;
+    "run")
+        run
+        ;;
+    *)
+        echo "Invalid option: $1"
+        exit 1
+        ;;
+esac 
