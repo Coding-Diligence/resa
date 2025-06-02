@@ -78,12 +78,6 @@ clean_build() {
     mvn clean install
 }
 
-# Fonction pour arrêter l'application
-stop_app() {
-    print_message "Arrêt de l'application $GREEN$CONTEXT_APP_NAME$NC..."
-    pkill -f "spring-boot:run"
-}
-
 # Fonction pour démarrer la base de données
 start_db() {
     print_message "Démarrage de la base de données..."
@@ -127,7 +121,7 @@ run() {
     APP_PID=$!
     
     # Gérer le Ctrl+C
-    trap 'print_message "Arrêt de l environnement $GREEN$CONTEXT_APP_NAME$NC..."; stop_app; stop_db; exit 0' INT
+    trap 'print_message "Arrêt de l environnement $GREEN$CONTEXT_APP_NAME$NC..."; stop_db; exit 0' INT
     
     # Attendre que l'application se termine
     wait $APP_PID
@@ -138,11 +132,8 @@ case "$1" in
     "start")
         start_app
         ;;
-    "stop")
-        stop_app
-        ;;
     "restart")
-        stop_app
+        stop_db
         sleep 2
         start_app
         ;;
@@ -166,10 +157,9 @@ case "$1" in
         ;;
     *)
         echo "Invalid option: $1"
-        echo "Usage: $0 {start|stop|restart|build|db:start|db:stop|db:restart|db:logs|run}"
+        echo "Usage: $0 {start|restart|build|db:start|db:stop|db:restart|db:logs|run}"
         echo "Commands:"
         echo "  start       - Start the application"
-        echo "  stop        - Stop the application"
         echo "  restart     - Restart the application"
         echo "  build       - Clean and build the application"
         echo "  db:start    - Start the database"
