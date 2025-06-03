@@ -6,6 +6,7 @@ import com.resa.api.service.TravelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -47,5 +48,25 @@ public class TravelServiceImpl implements TravelService {
     public void deleteTravel(Integer id) {
         Travel travel = getTravelById(id);
         travelRepository.delete(travel);
+    }
+
+    @Override
+    public List<Travel> getTravelsByDeparturePort(String port) {
+        return travelRepository.findByDeparturePort(port);
+    }
+
+    @Override
+    public List<Travel> getTravelsByArrivalPort(String port) {
+        return travelRepository.findByArrivalPort(port);
+    }
+
+    @Override
+    public List<Travel> getTravelsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        return travelRepository.findByDepartureTimeBetween(startDate, endDate);
+    }
+
+    @Override
+    public List<Travel> getTravelsByBoat(Integer boatId) {
+        return travelRepository.findByBoatId(boatId);
     }
 }

@@ -1,6 +1,7 @@
 package com.resa.api.service.impl;
 
 import com.resa.api.model.User;
+import com.resa.api.model.UserRoles;
 import com.resa.api.repository.UserRepository;
 import com.resa.api.security.Role;
 import com.resa.api.service.UserService;
@@ -43,7 +44,10 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            user.setRoles(List.of(Role.ROLE_USER));
+            UserRoles userRole = new UserRoles();
+            userRole.setUser(user);
+            userRole.setRoles(Role.ROLE_USER.name());
+            user.setRoles(List.of(userRole));
         }
 
         return userRepository.save(user);
@@ -79,5 +83,21 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Integer id) {
         User user = getUserById(id);
         userRepository.delete(user);
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+    }
+
+    @Override
+    public User updateUserRole(Integer id, String role) {
+        User user = getUserById(id);
+        UserRoles userRole = new UserRoles();
+        userRole.setUser(user);
+        userRole.setRoles(role);
+        user.setRoles(List.of(userRole));
+        return userRepository.save(user);
     }
 }

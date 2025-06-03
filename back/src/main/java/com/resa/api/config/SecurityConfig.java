@@ -35,6 +35,9 @@ public class SecurityConfig {
                 .requestMatchers("/vehicle/**").permitAll()
                 .requestMatchers("/api/boats/**").permitAll()
                 .requestMatchers("/users/**").permitAll()
+                .requestMatchers("/boat/**").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
