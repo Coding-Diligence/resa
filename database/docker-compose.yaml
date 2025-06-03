@@ -1,0 +1,42 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: resa-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: resa
+      MYSQL_USER: resa
+      MYSQL_PASSWORD: resa
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data:/var/lib/mysql
+      # - ./init:/docker-entrypoint-initdb.d
+    networks:
+      - resa-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  phpmyadmin:
+    image: arm64v8/phpmyadmin
+    container_name: phpmyadmin-resa
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    networks:
+      - resa-network
+
+networks:
+  resa-network:
+    driver: bridge
+
+volumes:
+  mysql-data: 

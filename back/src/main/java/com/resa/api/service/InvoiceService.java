@@ -1,6 +1,8 @@
 package com.resa.api.service;
 
 import com.resa.api.model.Invoice;
+import com.resa.api.model.InvoiceExtra;
+import com.resa.api.model.Extra;
 import com.resa.api.repository.InvoiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,5 +45,31 @@ public class InvoiceService {
     public void deleteInvoice(Integer id) {
         Invoice invoice = getInvoiceById(id);
         invoiceRepository.delete(invoice);
+    }
+
+    public Invoice addExtraToInvoice(Integer invoiceId, Extra extra) {
+        Invoice invoice = getInvoiceById(invoiceId);
+        
+        InvoiceExtra invoiceExtra = new InvoiceExtra();
+        invoiceExtra.setInvoice(invoice);
+        invoiceExtra.setExtra(extra);
+        invoiceExtra.setCreatedAt(LocalDateTime.now());
+        invoiceExtra.setUpdatedAt(LocalDateTime.now());
+        
+        invoice.getInvoiceExtras().add(invoiceExtra);
+        invoice.setUpdatedAt(LocalDateTime.now());
+        
+        return invoiceRepository.save(invoice);
+    }
+
+    public void removeExtraFromInvoice(Integer invoiceId, Integer extraId) {
+        Invoice invoice = getInvoiceById(invoiceId);
+        
+        invoice.getInvoiceExtras().removeIf(ie -> 
+            ie.getExtra().getId().equals(extraId)
+        );
+        
+        invoice.setUpdatedAt(LocalDateTime.now());
+        invoiceRepository.save(invoice);
     }
 } 

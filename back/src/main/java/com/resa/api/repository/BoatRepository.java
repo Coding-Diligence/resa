@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface BoatRepository extends JpaRepository<Boat, Integer> {
     List<Boat> findByTravelsIsEmpty();
-    List<Boat> findByPort(String port);
-    List<Boat> findByPortAndTravelsIsEmpty(String port);
+    List<Boat> findByTravelsDeparturePort(String port);
+    List<Boat> findByTravelsArrivalPort(String port);
+    List<Boat> findByTravelsDeparturePortAndTravelsIsEmpty(String port);
+    List<Boat> findByTravelsArrivalPortAndTravelsIsEmpty(String port);
 } 
