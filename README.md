@@ -31,6 +31,8 @@
 ./runback run              # 🧱 lance le projet complet (bdd + java)
 ```
 ## 🗄️ Commandes Base de Données
+**📁 Depuis le dossier /database/ :**
+
 🪟 Windows
 ```bash
 ./runback.ps1 db:start     # 🟢 Démarre MySQL & phpMyAdmin
