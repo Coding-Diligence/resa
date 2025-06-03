@@ -41,7 +41,8 @@
 ./runback db:restart       # ♻️ Redémarre la base de données
 ./runback db:logs          # 📜 Affiche les logs de la BDD
 ```
-✅ Prérequis
+## ✅ Prérequis
+
 ☕ Java
 
 📦 Maven
