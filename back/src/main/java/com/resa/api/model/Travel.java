@@ -64,4 +64,101 @@ public class Travel extends BaseEntity {
 
     @ManyToMany(mappedBy = "travels")
     private List<Vehicle> vehicles;
+
+    // Getters and Setters
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getDepartureTime() {
+        return departureTime;
+    }
+
+    public void setDepartureTime(LocalDateTime departureTime) {
+        this.departureTime = departureTime;
+    }
+
+    public LocalDateTime getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public void setArrivalTime(LocalDateTime arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
+    public String getDeparturePort() {
+        return departurePort;
+    }
+
+    public void setDeparturePort(String departurePort) {
+        this.departurePort = departurePort;
+    }
+
+    public String getArrivalPort() {
+        return arrivalPort;
+    }
+
+    public void setArrivalPort(String arrivalPort) {
+        this.arrivalPort = arrivalPort;
+    }
+
+    public BigDecimal getPriceHuman() {
+        return priceHuman;
+    }
+
+    public void setPriceHuman(BigDecimal priceHuman) {
+        this.priceHuman = priceHuman;
+    }
+
+    public BigDecimal getPriceVehicle() {
+        return priceVehicle;
+    }
+
+    public void setPriceVehicle(BigDecimal priceVehicle) {
+        this.priceVehicle = priceVehicle;
+    }
+
+    public Boat getBoat() {
+        return boat;
+    }
+
+    public void setBoat(Boat boat) {
+        this.boat = boat;
+    }
+
+    public List<Extra> getExtras() {
+        return extras;
+    }
+
+    public void setExtras(List<Extra> extras) {
+        this.extras = extras;
+    }
+
+    public List<Invoice> getInvoices() {
+        return invoices;
+    }
+
+    public void setInvoices(List<Invoice> invoices) {
+        this.invoices = invoices;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
+    public List<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(List<Vehicle> vehicles) {
+        this.vehicles = vehicles;
+    }
 } 
