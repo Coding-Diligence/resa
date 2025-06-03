@@ -34,6 +34,7 @@ public class SecurityConfig {
                 .requestMatchers("/travel/**").permitAll()
                 .requestMatchers("/vehicle/**").permitAll()
                 .requestMatchers("/api/boats/**").permitAll()
+                .requestMatchers("/users/**").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
