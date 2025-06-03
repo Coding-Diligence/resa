@@ -188,6 +188,7 @@ function Start-App {
     Print-Message "Démarrage de l'application..."
     Set-Location back
     mvn spring-boot:run
+    Set-Location ..
 }
 
 # Fonction pour nettoyer et compiler

@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/travel/**").permitAll()
                 .requestMatchers("/vehicle/**").permitAll()
+                .requestMatchers("/users/**").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
