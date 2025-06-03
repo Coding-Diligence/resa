@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Compte from "../partials/compte";
+import Reservation from "@/app/pages/Reservation";
 
 export default function Navbar() {
     return (
@@ -13,8 +14,8 @@ export default function Navbar() {
                         </Link>
                     </li>
                     <li>
-                        <Link href="/liste-reservation" className="hover:text-gray-300">
-                            Gérer mes réservations
+                        <Link href="/reservation-list" className="hover:text-gray-300">
+                            Mes réservations
                         </Link>
                     </li>
                     <li>
