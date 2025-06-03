@@ -54,3 +54,13 @@
 Une fois le backend démarré, vous pouvez accéder à la documentation interactive de l'API via Swagger :
 
 [🔗 http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
+
+
+
+## ⚙️ Commandes Frontend
+
+```bash
+npm install        # 📦 Installe les dépendances
+npm run dev        # 🚀 Lance le serveur de développement Vite
+```
