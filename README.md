@@ -22,6 +22,10 @@
 ./runback.ps1 restart      # 🔄 Redémarre l'application
 ./runback.ps1 build        # 🧱 Nettoie et compile le projet
 ```
+🔧 Si un problème empêche l'exécution des scripts PowerShell :
+```bash
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
 🐧 Linux / MacOS
 ```bash
 ./runback start            # 🚀 Démarre l'application Spring Boot
