@@ -28,6 +28,7 @@
 ./runback stop             # 🛑 Arrête l'application
 ./runback restart          # 🔄 Redémarre l'application
 ./runback build            # 🧱 Nettoie et compile le projet
+./runback run              # 🧱 lance le projet complet (bdd + java)
 ```
 ## 🗄️ Commandes Base de Données
 🪟 Windows
