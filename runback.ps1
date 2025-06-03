@@ -7,8 +7,10 @@ Ce script permet de :
 - Démarrer/arrêter/redémarrer l'application
 - Nettoyer et compiler le projet
 - Vérifier et gérer l'état de WAMP pour la base de données
+- Vérifier et installer Java 17 si nécessaire
 #>
 
+# Tentative de détection automatique de JAVA_HOME
 $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot"
 
 # Couleurs pour les messages
@@ -30,6 +32,44 @@ function Print-Error {
 function Print-Warning {
     param([string]$message)
     Write-Host "[WARNING] $message" -ForegroundColor $Yellow
+}
+
+# Fonction pour installer Java 17 via Chocolatey
+function Install-Java17 {
+    Print-Message "Installation de Java 17..."
+    try {
+        choco install temurin17 -y --force
+        Print-Message "Java 17 installé avec succès"
+        
+        # Mise à jour de JAVA_HOME après installation
+        $javaPath = Get-ChildItem "C:\Program Files\Eclipse Adoptium\jdk-17*" | Select-Object -First 1 -ExpandProperty FullName
+        if ($javaPath) {
+            $env:JAVA_HOME = $javaPath
+            [System.Environment]::SetEnvironmentVariable("JAVA_HOME", $javaPath, "Machine")
+            Print-Message "JAVA_HOME mis à jour : $javaPath"
+        }
+        
+        # Rafraîchir le PATH
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+    } catch {
+        Print-Error "Échec de l'installation de Java 17"
+        Print-Message "Vous pouvez l'installer manuellement depuis https://adoptium.net/"
+        exit 1
+    }
+}
+
+# Fonction pour vérifier la version de Java
+function Test-JavaVersion {
+    try {
+        $javaVersion = & java -version 2>&1 | Select-String -Pattern 'version'
+        if ($javaVersion -match '17\.') {
+            Print-Message "Java 17 est déjà installé : $javaVersion"
+            return $true
+        }
+        return $false
+    } catch {
+        return $false
+    }
 }
 
 # Fonction pour installer Maven
@@ -112,10 +152,10 @@ function Stop-Wamp {
     }
 }
 
-# Vérifier si Maven est installé
-if (-not (Get-Command mvn -ErrorAction SilentlyContinue)) {
-    Print-Warning "Maven n'est pas installé."
-    $response = Read-Host "Voulez-vous l'installer maintenant ? (y/n)"
+# Vérifier et installer Java 17 si nécessaire
+if (-not (Test-JavaVersion)) {
+    Print-Warning "Java 17 n'est pas installé ou n'est pas la version par défaut."
+    $response = Read-Host "Voulez-vous installer Java 17 automatiquement ? (y/n)"
     if ($response -eq 'y') {
         # Vérifier si Chocolatey est installé
         if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
@@ -124,17 +164,23 @@ if (-not (Get-Command mvn -ErrorAction SilentlyContinue)) {
             [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
             iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
         }
+        Install-Java17
+    } else {
+        Print-Error "Java 17 est requis pour exécuter l'application."
+        exit 1
+    }
+}
+
+# Vérifier si Maven est installé
+if (-not (Get-Command mvn -ErrorAction SilentlyContinue)) {
+    Print-Warning "Maven n'est pas installé."
+    $response = Read-Host "Voulez-vous l'installer maintenant ? (y/n)"
+    if ($response -eq 'y') {
         Install-Maven
     } else {
         Print-Error "Maven est requis pour exécuter l'application."
         exit 1
     }
-}
-
-# Vérifier si Java est installé
-if (-not (Get-Command java -ErrorAction SilentlyContinue)) {
-    Print-Error "Java n'est pas installé. Veuillez l'installer d'abord."
-    exit 1
 }
 
 # Fonction pour démarrer l'application
