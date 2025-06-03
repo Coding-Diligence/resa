@@ -12,7 +12,8 @@
 
 👤 César MOREAU
 
-## ⚙️ Commandes Backend
+# ⚙️ Commandes Backend
+**📁 Depuis le dossier /back/ :**
 🪟 Windows
 ```bash
 ./runback.ps1 start        # 🚀 Démarre l'application Spring Boot
@@ -49,7 +50,7 @@
 
 🐘 Wamp (pour le serveur MySQL et phpMyAdmin)
 
-# 📚 Documentation de l'API
+## 📚 Documentation de l'API
 
 Une fois le backend démarré, vous pouvez accéder à la documentation interactive de l'API via Swagger :
 
@@ -58,8 +59,8 @@ Une fois le backend démarré, vous pouvez accéder à la documentation interact
 
 
 
-## ⚙️ Commandes Frontend
-
+# ⚙️ Commandes Frontend
+**📁 Depuis le dossier /front/resa/ :**
 ```bash
 npm install        # 📦 Installe les dépendances
 npm run dev        # 🚀 Lance le serveur de développement Vite
