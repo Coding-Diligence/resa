@@ -13,7 +13,7 @@
 👤 César MOREAU
 
 # ⚙️ Commandes Backend
-**📁 Depuis le dossier /back/ :**
+**📁 A la racine du dossier :**
 
 🪟 Windows
 ```bash
