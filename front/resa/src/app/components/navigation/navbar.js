@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Compte from "../partials/compte";
+import Reservation from "@/app/pages/Reservation";
 
 export default function Navbar() {
   return (
