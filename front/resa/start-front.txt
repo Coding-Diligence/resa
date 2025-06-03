@@ -1,0 +1,11 @@
+## Comment lancer le front ?
+
+Après avoir cloné le dépôt, il faut installer les dépendances et lancer le front.
+```bash
+# Aller dans le dossier front
+cd ./front/resa   
+# Installer les dépendances
+npm install
+# Lancer le front
+npm run dev
+```
