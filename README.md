@@ -46,5 +46,5 @@
 
 📦 Maven
 
-🐳 Docker
+🐘 Wamp (pour le serveur MySQL et phpMyAdmin)
 
