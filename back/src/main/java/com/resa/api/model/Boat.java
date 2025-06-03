@@ -1,11 +1,13 @@
 package com.resa.api.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.EqualsAndHashCode;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "boat")
 @EqualsAndHashCode(callSuper = true)
@@ -26,6 +28,9 @@ public class Boat extends BaseEntity {
 
     @Column(name = "place_freight", nullable = false)
     private Integer placeFreight;
+
+    @Column(nullable = false)
+    private String port;
 
     @OneToMany(mappedBy = "boat")
     private List<Travel> travels;
