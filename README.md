@@ -17,7 +17,7 @@
 
 🪟 Windows
 ```bash
-./runback.ps1 start        # 🚀 Démarre l'application Spring Boot
+./runback.ps1 start        # 🚀 Démarre l'application Spring Boot + BDD
 ./runback.ps1 stop         # 🛑 Arrête l'application
 ./runback.ps1 restart      # 🔄 Redémarre l'application
 ./runback.ps1 build        # 🧱 Nettoie et compile le projet
