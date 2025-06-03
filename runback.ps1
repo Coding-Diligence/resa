@@ -1,14 +1,16 @@
 <#
 .SYNOPSIS
-Script pour gérer l'application Spring Boot et la base de données MySQL avec Docker
+Script pour gérer l'application Spring Boot avec WAMP comme serveur de base de données
 
 .DESCRIPTION
 Ce script permet de :
 - Démarrer/arrêter/redémarrer l'application
 - Nettoyer et compiler le projet
-- Gérer la base de données (démarrer/arrêter/redémarrer/afficher les logs)
+- Vérifier et gérer l'état de WAMP pour la base de données
 #>
+
 $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.15.6-hotspot"
+
 # Couleurs pour les messages
 $Green = "Green"
 $Red = "Red"
@@ -43,6 +45,73 @@ function Install-Maven {
     }
 }
 
+# Fonction pour vérifier si WAMP est installé
+function Test-WampInstalled {
+    $wampPath = "C:\wamp64\wampmanager.exe"
+    return (Test-Path $wampPath)
+}
+
+# Fonction pour vérifier si WAMP est en cours d'exécution
+function Test-WampRunning {
+    return (Get-Process -Name "wampmanager" -ErrorAction SilentlyContinue) -ne $null
+}
+
+# Fonction pour démarrer WAMP
+function Start-Wamp {
+    if (-not (Test-WampInstalled)) {
+        Print-Error "WAMP n'est pas installé ou le chemin par défaut est incorrect."
+        Print-Message "Veuillez installer WAMP depuis http://www.wampserver.com/"
+        exit 1
+    }
+    
+    if (-not (Test-WampRunning)) {
+        Print-Message "Démarrage de WAMP..."
+        Start-Process "C:\wamp64\wampmanager.exe"
+        
+        # Attendre que les services WAMP soient complètement démarrés
+        $timeout = 60 # 60 secondes max d'attente
+        $started = $false
+        for ($i = 0; $i -lt $timeout; $i++) {
+            try {
+                $mysqlService = Get-Service -Name "wampmysqld64" -ErrorAction Stop
+                if ($mysqlService.Status -eq "Running") {
+                    $started = $true
+                    break
+                }
+            } catch {
+                # Le service n'est pas encore disponible
+            }
+            Start-Sleep -Seconds 1
+        }
+        
+        if (-not $started) {
+            Print-Warning "WAMP a pris trop de temps à démarrer. Vérifiez manuellement."
+        } else {
+            Print-Message "WAMP et MySQL sont maintenant démarrés"
+        }
+    } else {
+        Print-Message "WAMP est déjà en cours d'exécution"
+    }
+}
+
+# Fonction pour arrêter WAMP
+function Stop-Wamp {
+    if (Test-WampRunning) {
+        Print-Message "Arrêt de WAMP..."
+        Stop-Process -Name "wampmanager" -Force
+        
+        # Arrêt des services WAMP
+        try {
+            Stop-Service -Name "wampmysqld64" -Force -ErrorAction Stop
+            Print-Message "Service MySQL arrêté"
+        } catch {
+            Print-Warning "Impossible d'arrêter le service MySQL: $_"
+        }
+    } else {
+        Print-Message "WAMP n'est pas en cours d'exécution"
+    }
+}
+
 # Vérifier si Maven est installé
 if (-not (Get-Command mvn -ErrorAction SilentlyContinue)) {
     Print-Warning "Maven n'est pas installé."
@@ -68,21 +137,17 @@ if (-not (Get-Command java -ErrorAction SilentlyContinue)) {
     exit 1
 }
 
-# Vérifier si Docker est installé
-if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
-    Print-Error "Docker n'est pas installé. Veuillez l'installer d'abord."
-    exit 1
-}
-
 # Fonction pour démarrer l'application
 function Start-App {
     Print-Message "Démarrage de l'application..."
+    Set-Location back
     mvn spring-boot:run
 }
 
 # Fonction pour nettoyer et compiler
 function Clean-Build {
     Print-Message "Nettoyage et compilation du projet..."
+    Set-Location back
     mvn clean install
 }
 
@@ -92,55 +157,27 @@ function Stop-App {
     Get-Process java | Where-Object { $_.CommandLine -like "*spring-boot:run*" } | Stop-Process -Force
 }
 
-# Fonction pour démarrer la base de données
-function Start-Db {
-    Print-Message "Démarrage de la base de données..."
-    Set-Location database
-    docker-compose up -d
-    Set-Location ..
-}
-
-# Fonction pour arrêter la base de données
-function Stop-Db {
-    Print-Message "Arrêt de la base de données..."
-    Set-Location database
-    docker-compose down
-    Set-Location ..
-}
-
-# Fonction pour redémarrer la base de données
-function Restart-Db {
-    Stop-Db
-    Start-Sleep -Seconds 2
-    Start-Db
-}
-
-# Fonction pour voir les logs de la base de données
-function Show-DbLogs {
-    Print-Message "Affichage des logs de la base de données..."
-    Set-Location database
-    docker-compose logs -f
-    Set-Location ..
-}
-
 # Gestion des arguments
 if ($args.Count -eq 0) {
-    Write-Host "Usage: .\runback.ps1 {start|stop|restart|build|db:start|db:stop|db:restart|db:logs}"
+    Write-Host "Usage: .\runback.ps1 {start|stop|restart|build|db:start|db:stop|db:restart}"
     Write-Host "Commands:"
-    Write-Host "  start       - Start the application and database"
-    Write-Host "  stop        - Stop the application"
-    Write-Host "  restart     - Restart the application"
-    Write-Host "  build       - Clean and build the application"
-    Write-Host "  db:start    - Start the database"
-    Write-Host "  db:stop     - Stop the database"
-    Write-Host "  db:restart  - Restart the database"
-    Write-Host "  db:logs     - Show database logs"
+    Write-Host "  start       - Démarrer l'application et vérifier WAMP"
+    Write-Host "  stop        - Arrêter l'application"
+    Write-Host "  restart     - Redémarrer l'application"
+    Write-Host "  build       - Nettoyer et compiler l'application"
+    Write-Host "  db:start    - Démarrer WAMP et MySQL"
+    Write-Host "  db:stop     - Arrêter WAMP et MySQL"
+    Write-Host "  db:restart  - Redémarrer WAMP et MySQL"
     exit 1
 }
 
 switch ($args[0]) {
     "start" {
-        Start-Db
+        # Vérifier et démarrer WAMP si nécessaire
+        if (-not (Test-WampRunning)) {
+            Print-Warning "WAMP n'est pas démarré, démarrage en cours..."
+            Start-Wamp
+        }
         Start-App
     }
     "stop" {
@@ -155,20 +192,19 @@ switch ($args[0]) {
         Clean-Build
     }
     "db:start" {
-        Start-Db
+        Start-Wamp
     }
     "db:stop" {
-        Stop-Db
+        Stop-Wamp
     }
     "db:restart" {
-        Restart-Db
-    }
-    "db:logs" {
-        Show-DbLogs
+        Stop-Wamp
+        Start-Sleep -Seconds 5
+        Start-Wamp
     }
     default {
         Write-Host "Option invalide: $($args[0])"
-        Write-Host "Utilisation: .\runback.ps1 {start|stop|restart|build|db:start|db:stop|db:restart|db:logs}"
+        Write-Host "Utilisation: .\runback.ps1 {start|stop|restart|build|db:start|db:stop|db:restart}"
         exit 1
     }
 }
