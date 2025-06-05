@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import FerryOffersManager from '../components/admin/FerryOffersManager';
 import UserManager from '../components/admin/UsersManager';
-
+import SlotManager from '../components/admin/SlotManager';
+import ReservationDashboard from '../components/admin/ReservationDashboard';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('ferries'); // 'users', 'slots', 'reservations'
@@ -70,7 +71,7 @@ function SlotDashboard() {
   return (
     <div>
       <h3 className="text-2xl font-semibold mb-4">Créneaux disponibles</h3>
-      <p>(Plages horaires, jours ouvrés, planning)</p>
+      <SlotDashboard/>
     </div>
   );
 }
@@ -79,7 +80,7 @@ function ReservationDashboard() {
   return (
     <div>
       <h3 className="text-2xl font-semibold mb-4">Réservations</h3>
-      <p>(Tableau + export CSV/PDF)</p>
+      <ReservationDashboard/>
     </div>
   );
 }
