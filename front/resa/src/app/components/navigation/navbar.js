@@ -38,6 +38,11 @@ export default function Navbar() {
               Inscription
             </Link>
           </li>
+          <li>
+            <Link href="/admin" className="hover:text-gray-300">
+              admin
+            </Link>
+          </li>
         </ul>
       </nav>
     </div>
