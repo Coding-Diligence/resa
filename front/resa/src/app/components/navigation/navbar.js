@@ -14,19 +14,12 @@ export default function Navbar() {
             </Link>
           </li>
           <li>
-            <Link href="/reservation" className="hover:text-gray-300">
-              Mes réservations
-            </Link>
-          </li>
-          <li>
-            <Link href="/liste-reservation" className="hover:text-gray-300">
+            <Link href="/reservation-list" className="hover:text-gray-300">
               Gérer mes réservations
             </Link>
           </li>
           <li>
-            <Link href="/profil" className="hover:text-gray-300">
-              Mon compte
-            </Link>
+            <Compte />
           </li>
           <li>
             <Link href="/login" className="hover:text-gray-300">
