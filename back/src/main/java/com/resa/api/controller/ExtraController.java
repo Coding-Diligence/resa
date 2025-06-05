@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/extra")
+@RequestMapping("/api/extras")
 public class ExtraController {
 
     @Autowired
