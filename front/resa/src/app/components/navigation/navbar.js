@@ -6,7 +6,7 @@ export default function Navbar() {
   return (
     <div className="bg-sky-950">
       <nav className="flex items-center justify-between p-4 text-white container">
-        <div className="text-lg font-bold">RESA</div>
+        <div className="text-lg font-bold">RESA ⛴️</div>
         <ul className="flex space-x-4">
           <li>
             <Link href="/" className="hover:text-gray-300">
@@ -26,11 +26,11 @@ export default function Navbar() {
               Connexion
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link href="/register" className="hover:text-gray-300">
               Inscription
             </Link>
-          </li>
+          </li> */}
         </ul>
       </nav>
     </div>

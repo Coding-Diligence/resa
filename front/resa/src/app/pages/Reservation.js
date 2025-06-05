@@ -47,7 +47,8 @@ export default function Reservation() {
       </div>
 
       {/* Compteurs */}
-      <div className="mb-6 space-y-4 flex flex-row">
+      <div className="flex flex-row justify-between items-center ">
+      <div className=" space-y-4 flex flex-row">
         {[
           { label: "Adultes", value: adults, setValue: setAdults },
           { label: "Enfants", value: children, setValue: setChildren },
@@ -79,12 +80,28 @@ export default function Reservation() {
       {/* Submit */}
       <div className="flex justify-center">
         <Link
-          href={`/liste-reservation?adults=${adults}&children=${children}&pets=${pets}`}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          href="/mes-reservations"
+          // onClick={(e) => {
+          //   e.preventDefault();
+          //   // Handle form submission logic here
+          //   console.log("Form submitted with:", {
+          //     destination: e.target.destination.value,
+          //     startDate: e.target.startDate.value,
+          //     endDate: e.target.endDate.value,
+          //     adults,
+          //     children,
+          //     pets,
+          //   });
+          // }}
+          className="px-4 py-1 bg-gradient-to-r from-sky-950 to-sky-800 text-white rounded-md 
+             hover:brightness-120 transition duration-300 ease-in-out 
+             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           Rechercher
         </Link>
       </div>
+      </div>
+
     </form>
   );
 }
