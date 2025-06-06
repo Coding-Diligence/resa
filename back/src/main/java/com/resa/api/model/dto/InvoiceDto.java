@@ -14,10 +14,13 @@ public class InvoiceDto {
     private Integer travel_id;
     private Integer user_id;
 
-    public InvoiceDto (Invoice invoice) {
-        this.id = invoice.getId();
+    public InvoiceDto (Invoice i) {
+        this.id = i.getId();
 
-        this.created_at = invoice.getCreatedAt();
-        this.updated_at = invoice.getUpdatedAt();
+        this.created_at = i.getCreatedAt();
+        this.updated_at = i.getUpdatedAt();
+
+        this.travel_id = i.getTravel().getId();
+        this.user_id = i.getUser().getId();
     }
 }

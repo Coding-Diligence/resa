@@ -29,3 +29,4 @@ public class BoatDto {
         this.place_human_and_pets = boat.getPlaceHumanAndPet();
     }
 }
+

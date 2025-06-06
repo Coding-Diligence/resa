@@ -5,9 +5,9 @@ import Link from "next/link";
 
 export default function Profile() {
     return (
-        <div className="m-auto flex flex-col items-center mt-10 justify-center w-full relative">
+        <div className="m-auto flex flex-col items-center mt-10 justify-center container relative">
             <h1 className="text-2xl font-bold mb-4">Modifier mon profile</h1>
-            <div className="bg-sky-950/70 p-6 rounded-2xl shadow-xl/30 w-full max-w-md">
+            <div className="bg-sky-950/70 p-6 container rounded-2xl shadow-xl/30 w-3/4 max-w-md">
                 <form>
                     <div className="mb-4">
                         <label htmlFor="name" className="block text-sm font-medium text-gray-300">Nom</label>

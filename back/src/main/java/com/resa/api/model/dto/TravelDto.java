@@ -20,19 +20,21 @@ public class TravelDto {
     private BigDecimal price_vehicle;
     private Integer boat_id;
 
-    public TravelDto (Travel travel) {
-        this.id = travel.getId();
+    public TravelDto (Travel t) {
+        this.id = t.getId();
 
-        this.created_at = travel.getCreatedAt();
-        this.updated_at = travel.getUpdatedAt();
+        this.created_at = t.getCreatedAt();
+        this.updated_at = t.getUpdatedAt();
 
-        this.arrival_port = travel.getArrivalPort();
-        this.arrival_time = travel.getArrivalTime();
+        this.arrival_port = t.getArrivalPort();
+        this.arrival_time = t.getArrivalTime();
 
-        this.departure_port = travel.getDeparturePort();
-        this.departure_time = travel.getDepartureTime();
+        this.departure_port = t.getDeparturePort();
+        this.departure_time = t.getDepartureTime();
 
-        this.price_human = travel.getPriceHuman();
-        this.price_vehicle = travel.getPriceVehicle();
+        this.price_human = t.getPriceHuman();
+        this.price_vehicle = t.getPriceVehicle();
+
+        this.boat_id = t.getBoat().getId();
     } 
 }
