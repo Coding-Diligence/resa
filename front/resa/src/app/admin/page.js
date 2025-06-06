@@ -4,10 +4,10 @@ import { useState } from 'react';
 import FerryOffersManager from '../components/admin/FerryOffersManager';
 import UserManager from '../components/admin/UsersManager';
 import SlotManager from '../components/admin/SlotManager';
-import ReservationDashboard from '../components/admin/ReservationDashboard';
+import ReservationDashboardComponent from '../components/admin/ReservationDashboard';
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState('ferries'); // 'users', 'slots', 'reservations'
+  const [activeTab, setActiveTab] = useState('ferries');
 
   return (
     <div className="grid grid-cols-2 min-h-screen bg-gray-100">
@@ -43,7 +43,7 @@ export default function AdminPage() {
         {activeTab === 'ferries' && <FerryDashboard />}
         {activeTab === 'users' && <UserDashboard />}
         {activeTab === 'slots' && <SlotDashboard />}
-        {activeTab === 'reservations' && <ReservationDashboard />}
+        {activeTab === 'reservations' && <ReservationTab />}
       </div>
     </div>
   );
@@ -71,16 +71,16 @@ function SlotDashboard() {
   return (
     <div>
       <h3 className="text-2xl font-semibold mb-4">Créneaux disponibles</h3>
-      <SlotDashboard/>
+      <SlotManager />
     </div>
   );
 }
 
-function ReservationDashboard() {
+function ReservationTab() {
   return (
     <div>
       <h3 className="text-2xl font-semibold mb-4">Réservations</h3>
-      <ReservationDashboard/>
+      <ReservationDashboardComponent />
     </div>
   );
 }
