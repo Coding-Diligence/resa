@@ -30,7 +30,12 @@ export default function Navbar() {
             <Link href="/register" className="hover:text-gray-300">
               Inscription
             </Link>
-          </li> */}
+          </li>
+          <li>
+            <Link href="/admin" className="hover:text-gray-300">
+              admin
+            </Link>
+          </li>
         </ul>
       </nav>
     </div>
