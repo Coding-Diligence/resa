@@ -10,7 +10,7 @@ export default function Navbar() {
         <ul className="flex space-x-4">
           <li>
             <Link href="/" className="hover:text-gray-300">
-              Réserver
+              Accueil
             </Link>
           </li>
           <li>
