@@ -1,7 +1,6 @@
 package com.resa.api.controller;
 
 import com.resa.api.model.Invoice;
-import com.resa.api.model.InvoiceExtra;
 import com.resa.api.model.Extra;
 import com.resa.api.service.InvoiceService;
 import jakarta.validation.Valid;
