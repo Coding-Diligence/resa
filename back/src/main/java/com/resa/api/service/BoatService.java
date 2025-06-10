@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,46 +20,54 @@ public class BoatService {
         return boatRepository.findAll();
     }
 
-    public Optional<Boat> getBoatById(Integer id) {
-        return boatRepository.findById(id);
+    public Boat getBoatById(Integer id) {
+        return boatRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Boat not found with id: " + id));
     }
 
     public List<Boat> getAvailableBoats() {
         return boatRepository.findByTravelsIsEmpty();
     }
 
-    public List<Boat> getBoatsByPort(String port) {
-        return boatRepository.findByPort(port);
+    public List<Boat> getBoatsByDeparturePort(String port) {
+        return boatRepository.findByTravelsDeparturePort(port);
     }
 
-    public List<Boat> getAvailableBoatsByPort(String port) {
-        return boatRepository.findByPortAndTravelsIsEmpty(port);
+    public List<Boat> getBoatsByArrivalPort(String port) {
+        return boatRepository.findByTravelsArrivalPort(port);
+    }
+
+    public List<Boat> getAvailableBoatsByDeparturePort(String port) {
+        return boatRepository.findByTravelsDeparturePortAndTravelsIsEmpty(port);
+    }
+
+    public List<Boat> getAvailableBoatsByArrivalPort(String port) {
+        return boatRepository.findByTravelsArrivalPortAndTravelsIsEmpty(port);
     }
 
     @Transactional
     public Boat createBoat(Boat boat) {
+        boat.setCreatedAt(LocalDateTime.now());
+        boat.setUpdatedAt(LocalDateTime.now());
         return boatRepository.save(boat);
     }
 
     @Transactional
     public Boat updateBoat(Integer id, Boat boatDetails) {
-        Boat boat = boatRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Boat not found"));
-
+        Boat boat = getBoatById(id);
+        
         boat.setName(boatDetails.getName());
         boat.setPlaceHumanAndPet(boatDetails.getPlaceHumanAndPet());
         boat.setCabins(boatDetails.getCabins());
         boat.setPlaceFreight(boatDetails.getPlaceFreight());
-        boat.setPort(boatDetails.getPort());
-
+        boat.setUpdatedAt(LocalDateTime.now());
+        
         return boatRepository.save(boat);
     }
 
     @Transactional
     public void deleteBoat(Integer id) {
-        if (!boatRepository.existsById(id)) {
-            throw new IllegalArgumentException("Boat not found");
-        }
-        boatRepository.deleteById(id);
+        Boat boat = getBoatById(id);
+        boatRepository.delete(boat);
     }
 } 

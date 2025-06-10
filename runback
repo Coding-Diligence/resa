@@ -71,6 +71,12 @@ start_app() {
     mvn spring-boot:run
 }
 
+# Fonction pour arrêter l'application
+stop_app() {
+    print_message "Arrêt de l'application $GREEN$CONTEXT_APP_NAME$NC..."
+    pkill -f "spring-boot:run"
+}
+
 # Fonction pour nettoyer et compiler
 clean_build() {
     print_message "Nettoyage et compilation du projet..."
@@ -115,13 +121,15 @@ run() {
     
     # Démarrer la base de données
     start_db
+
+    sleep 2
     
     # Démarrer l'application
     start_app &
     APP_PID=$!
     
     # Gérer le Ctrl+C
-    trap 'print_message "Arrêt de l environnement $GREEN$CONTEXT_APP_NAME$NC..."; stop_db; exit 0' INT
+    trap 'print_message "Arrêt de l environnement $GREEN$CONTEXT_APP_NAME$NC..."; stop_app; stop_db; exit 0' INT
     
     # Attendre que l'application se termine
     wait $APP_PID
