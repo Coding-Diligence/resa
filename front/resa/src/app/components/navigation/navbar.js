@@ -26,7 +26,7 @@ export default function Navbar() {
               Connexion
             </Link>
           </li>
-          {/* <li>
+          <li>
             <Link href="/register" className="hover:text-gray-300">
               Inscription
             </Link>
