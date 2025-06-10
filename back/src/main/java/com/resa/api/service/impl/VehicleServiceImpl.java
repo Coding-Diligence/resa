@@ -6,6 +6,7 @@ import com.resa.api.service.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -35,6 +36,8 @@ public class VehicleServiceImpl implements VehicleService {
         if (vehicleRepository.existsByRegistration(vehicle.getRegistration())) {
             throw new RuntimeException("Vehicle with registration " + vehicle.getRegistration() + " already exists");
         }
+        vehicle.setCreatedAt(LocalDateTime.now());
+        vehicle.setUpdatedAt(LocalDateTime.now());
         return vehicleRepository.save(vehicle);
     }
 
@@ -51,6 +54,7 @@ public class VehicleServiceImpl implements VehicleService {
         vehicle.setRegistration(vehicleDetails.getRegistration());
         vehicle.setType(vehicleDetails.getType());
         vehicle.setUser(vehicleDetails.getUser());
+        vehicle.setUpdatedAt(LocalDateTime.now());
         
         return vehicleRepository.save(vehicle);
     }

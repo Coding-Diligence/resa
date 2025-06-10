@@ -1,6 +1,8 @@
 package com.resa.api.controller;
 
 import com.resa.api.model.User;
+import com.resa.api.model.dto.AuthDto;
+import com.resa.api.model.dto.UserResponseDto;
 import com.resa.api.security.JwtService;
 import com.resa.api.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,14 +39,14 @@ public class AuthController {
         
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
-        response.put("user", createdUser);
+        response.put("user", new UserResponseDto(createdUser));
         
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
     @Operation(summary = "Login user", description = "Authenticates a user and returns a JWT token")
-    public ResponseEntity<?> login(@Valid @RequestBody User loginRequest) {
+    public ResponseEntity<?> login(@Valid @RequestBody AuthDto loginRequest) {
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 loginRequest.getEmail(),
@@ -57,7 +59,7 @@ public class AuthController {
         
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
-        response.put("user", user);
+        response.put("user", new UserResponseDto(user));
         
         return ResponseEntity.ok(response);
     }
