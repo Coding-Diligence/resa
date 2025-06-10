@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -42,11 +43,15 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
 
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
             UserRoles userRole = new UserRoles();
             userRole.setUser(user);
             userRole.setRoles(Role.ROLE_USER.name());
+            userRole.setCreatedAt(LocalDateTime.now());
+            userRole.setUpdatedAt(LocalDateTime.now());
             user.setRoles(List.of(userRole));
         }
 

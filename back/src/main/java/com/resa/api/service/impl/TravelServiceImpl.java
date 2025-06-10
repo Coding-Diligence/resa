@@ -28,6 +28,8 @@ public class TravelServiceImpl implements TravelService {
 
     @Override
     public Travel createTravel(Travel travel) {
+        travel.setCreatedAt(LocalDateTime.now());
+        travel.setUpdatedAt(LocalDateTime.now());
         return travelRepository.save(travel);
     }
 
@@ -41,6 +43,7 @@ public class TravelServiceImpl implements TravelService {
         travel.setPriceHuman(travelDetails.getPriceHuman());
         travel.setPriceVehicle(travelDetails.getPriceVehicle());
         travel.setBoat(travelDetails.getBoat());
+        travel.setUpdatedAt(LocalDateTime.now());
         return travelRepository.save(travel);
     }
 
