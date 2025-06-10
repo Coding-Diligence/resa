@@ -50,13 +50,6 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ./runback db:restart       # ♻️ Redémarre la base de données
 ./runback db:logs          # 📜 Affiche les logs de la BDD
 ```
-## ✅ Prérequis
-
-☕ Java
-
-📦 Maven
-
-🐘 Wamp (pour le serveur MySQL et phpMyAdmin)
 
 ## 📚 Documentation de l'API
 
@@ -73,3 +66,12 @@ Une fois le backend démarré, vous pouvez accéder à la documentation interact
 npm install        # 📦 Installe les dépendances
 npm run dev        # 🚀 Lance le serveur de développement Vite
 ```
+
+
+## ✅ Prérequis
+
+☕ Java
+
+📦 Maven
+
+🐘 Wamp (pour le serveur MySQL et phpMyAdmin)
