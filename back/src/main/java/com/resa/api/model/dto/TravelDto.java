@@ -18,9 +18,9 @@ public class TravelDto {
     private LocalDateTime departure_time;
     private BigDecimal price_human;
     private BigDecimal price_vehicle;
-    private Integer boat_id;
+    private BoatDto boat;
 
-    public TravelDto (Travel t) {
+    public TravelDto(Travel t) {
         this.id = t.getId();
 
         this.created_at = t.getCreatedAt();
@@ -35,6 +35,6 @@ public class TravelDto {
         this.price_human = t.getPriceHuman();
         this.price_vehicle = t.getPriceVehicle();
 
-        this.boat_id = t.getBoat().getId();
-    } 
+        this.boat = new BoatDto(t.getBoat());
+    }
 }

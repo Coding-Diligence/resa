@@ -1,6 +1,8 @@
 package com.resa.api.model.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.resa.api.model.Invoice;
 
@@ -13,14 +15,16 @@ public class InvoiceDto {
     private LocalDateTime updated_at;
     private Integer travel_id;
     private Integer user_id;
+    private List<InvoiceExtraDto> invoice_extras;
 
-    public InvoiceDto (Invoice i) {
-        this.id = i.getId();
-
-        this.created_at = i.getCreatedAt();
-        this.updated_at = i.getUpdatedAt();
-
-        this.travel_id = i.getTravel().getId();
-        this.user_id = i.getUser().getId();
+    public InvoiceDto(Invoice invoice) {
+        this.id = invoice.getId();
+        this.created_at = invoice.getCreatedAt();
+        this.updated_at = invoice.getUpdatedAt();
+        this.travel_id = invoice.getTravel().getId();
+        this.user_id = invoice.getUser().getId();
+        this.invoice_extras = invoice.getInvoiceExtras().stream()
+                .map(InvoiceExtraDto::new)
+                .collect(Collectors.toList());
     }
 }
