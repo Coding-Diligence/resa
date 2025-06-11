@@ -187,9 +187,16 @@ if (-not (Get-Command mvn -ErrorAction SilentlyContinue)) {
 function Start-App {
     Print-Message "Démarrage de l'application..."
     Set-Location back
+
+    $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.14.7-hotspot"
+    $env:Path += ";$env:JAVA_HOME\bin"
+
+    Print-Message "JAVA_HOME utilisé : $env:JAVA_HOME"
     mvn spring-boot:run
+
     Set-Location ..
 }
+
 
 # Fonction pour nettoyer et compiler
 function Clean-Build {
