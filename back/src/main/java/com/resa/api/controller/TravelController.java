@@ -1,6 +1,7 @@
 package com.resa.api.controller;
 
 import com.resa.api.model.Travel;
+import com.resa.api.model.dto.TravelDto;
 import com.resa.api.service.TravelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/travels")
@@ -23,52 +25,62 @@ public class TravelController {
 
     @GetMapping
     @Operation(summary = "Get all travels", description = "Retrieves a list of all travels")
-    public List<Travel> getAllTravels() {
-        return travelService.getAllTravels();
+    public List<TravelDto> getAllTravels() {
+        return travelService.getAllTravels().stream()
+                .map(TravelDto::new)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get travel by ID", description = "Retrieves a travel by its ID")
-    public Travel getTravelById(@PathVariable Integer id) {
-        return travelService.getTravelById(id);
+    public TravelDto getTravelById(@PathVariable Integer id) {
+        return new TravelDto(travelService.getTravelById(id));
     }
 
     @GetMapping("/departure-port/{port}")
     @Operation(summary = "Get travels by departure port", description = "Retrieves a list of travels from the specified port")
-    public List<Travel> getTravelsByDeparturePort(@PathVariable String port) {
-        return travelService.getTravelsByDeparturePort(port);
+    public List<TravelDto> getTravelsByDeparturePort(@PathVariable String port) {
+        return travelService.getTravelsByDeparturePort(port).stream()
+                .map(TravelDto::new)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/arrival-port/{port}")
     @Operation(summary = "Get travels by arrival port", description = "Retrieves a list of travels to the specified port")
-    public List<Travel> getTravelsByArrivalPort(@PathVariable String port) {
-        return travelService.getTravelsByArrivalPort(port);
+    public List<TravelDto> getTravelsByArrivalPort(@PathVariable String port) {
+        return travelService.getTravelsByArrivalPort(port).stream()
+                .map(TravelDto::new)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/date-range")
     @Operation(summary = "Get travels by date range", description = "Retrieves a list of travels within the specified date range")
-    public List<Travel> getTravelsByDateRange(
+    public List<TravelDto> getTravelsByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
-        return travelService.getTravelsByDateRange(startDate, endDate);
+        return travelService.getTravelsByDateRange(startDate, endDate).stream()
+                .map(TravelDto::new)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/boat/{boatId}")
     @Operation(summary = "Get travels by boat", description = "Retrieves a list of travels for the specified boat")
-    public List<Travel> getTravelsByBoat(@PathVariable Integer boatId) {
-        return travelService.getTravelsByBoat(boatId);
+    public List<TravelDto> getTravelsByBoat(@PathVariable Integer boatId) {
+        return travelService.getTravelsByBoat(boatId).stream()
+                .map(TravelDto::new)
+                .collect(Collectors.toList());
     }
 
     @PostMapping
     @Operation(summary = "Create travel", description = "Creates a new travel")
-    public Travel createTravel(@Valid @RequestBody Travel travel) {
-        return travelService.createTravel(travel);
+    public TravelDto createTravel(@Valid @RequestBody Travel travel) {
+        return new TravelDto(travelService.createTravel(travel));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update travel", description = "Updates an existing travel's information")
-    public Travel updateTravel(@PathVariable Integer id, @Valid @RequestBody Travel travel) {
-        return travelService.updateTravel(id, travel);
+    public TravelDto updateTravel(@PathVariable Integer id, @Valid @RequestBody Travel travel) {
+        return new TravelDto(travelService.updateTravel(id, travel));
     }
 
     @DeleteMapping("/{id}")
