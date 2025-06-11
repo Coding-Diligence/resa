@@ -14,17 +14,16 @@ public class ExtraDto {
     private LocalDateTime updated_at;
     private String name;
     private BigDecimal price;
+    private Integer quantity;
     private Integer travel_id;
 
-    public ExtraDto (Extra e) {
-        this.id = e.getId();
-
-        this.created_at = e.getCreatedAt();
-        this.updated_at = e.getUpdatedAt();
-
-        this.name = e.getName();
-        this.price = e.getPrice();
-
-        this.travel_id = e.getTravel().getId();
+    public ExtraDto(Extra extra) {
+        this.id = extra.getId();
+        this.created_at = extra.getCreatedAt();
+        this.updated_at = extra.getUpdatedAt();
+        this.name = extra.getName();
+        this.price = extra.getPrice();
+        this.quantity = extra.getQuantity();
+        this.travel_id = extra.getTravel().getId();
     }
 }

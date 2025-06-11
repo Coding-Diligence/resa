@@ -23,6 +23,10 @@ public class ExtraService {
                 .orElseThrow(() -> new RuntimeException("Extra not found with id: " + id));
     }
 
+    public List<Extra> getExtrasByTravelId(Integer travelId) {
+        return extraRepository.findByTravelId(travelId);
+    }
+
     public Extra createExtra(Extra extra) {
         extra.setCreatedAt(LocalDateTime.now());
         extra.setUpdatedAt(LocalDateTime.now());
