@@ -1,40 +1,37 @@
+"use client";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Compte from "../partials/compte";
-import Reservation from "@/app/pages/Reservation";
 
 export default function Navbar() {
+  const pathname = usePathname(); // Récupère le chemin actuel
+  
   return (
-    <div className="bg-sky-950">
-      <nav className="flex items-center justify-between p-4 text-white container">
-        <div className="text-lg font-bold">RESA ⛴️</div>
-        <ul className="flex space-x-4">
-          <li>
-            <Link href="/" className="hover:text-gray-300">
-              Accueil
-            </Link>
-          </li>
-          <li>
-            <Link href="/reservation-list" className="hover:text-gray-300">
-              Gérer mes réservations
-            </Link>
-          </li>
+    <div className="bg-sky-950 ">
+      <nav className="flex items-center justify-between text-white px-10 py-2 mx-auto">
+        <div className="flex gap-10">
+          <img src="/assets/logoresa-removebg-preview.PNG" alt="Logo Resa" className="h-18" />
+          <ul className="flex space-x-6 justify-center items-center">
+            <li>
+              <Link href="/admin" className={`hover:text-gray-300 font-medium text-lg ${pathname === "/admin" ? "border-b-2 border-[#e76f51]" : ""}`}>
+                Dashboard
+              </Link>
+            </li>
+            <li>
+              <Link href="/" className={`hover:text-gray-300 font-medium text-lg ${pathname === "/" ? "border-b-2 border-[#e76f51]" : ""}`}>
+                Réserver
+              </Link>
+            </li>
+            <li>
+              <Link href="/reservation-list" className={`hover:text-gray-300 font-medium text-lg ${pathname === "/reservation-list" ? "border-b-2 border-[#e76f51]" : ""}`}>
+                Gérer mes réservations
+              </Link>
+            </li>
+          </ul>
+        </div>
+        <ul className="flex justify-center items-center">
           <li>
             <Compte />
-          </li>
-          <li>
-            <Link href="/login" className="hover:text-gray-300">
-              Connexion
-            </Link>
-          </li>
-          <li>
-            <Link href="/register" className="hover:text-gray-300">
-              Inscription
-            </Link>
-          </li>
-          <li>
-            <Link href="/admin" className="hover:text-gray-300">
-              admin
-            </Link>
           </li>
         </ul>
       </nav>

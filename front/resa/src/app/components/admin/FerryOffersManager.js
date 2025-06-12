@@ -28,8 +28,6 @@ export default function FerryDashboard() {
 
   return (
     <div>
-      <h3 className="text-2xl font-semibold mb-4">Offres de ferry</h3>
-
       <div className="mb-6 space-y-2">
         <input
           type="text"
