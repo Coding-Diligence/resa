@@ -1,36 +1,67 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { AdminAPI } from '@/app/services/AdminAPI';
 
 export default function UserManager() {
-  const [users, setUsers] = useState([
-    { id: 1, name: 'Alice', email: 'alice@example.com', role: 'admin' },
-    { id: 2, name: 'Bob', email: 'bob@example.com', role: 'user' },
-  ]);
+  const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState({ name: '', email: '', role: 'user' });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Chargement initial des utilisateurs
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const data = await AdminAPI.getUsers();
+        setUsers(data);
+      } catch (err) {
+        setError(err.message || 'Erreur lors du chargement des utilisateurs');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchUsers();
+  }, []);
 
   const handleChange = (e) => {
     setNewUser({ ...newUser, [e.target.name]: e.target.value });
   };
 
-  const handleAddUser = () => {
+  const handleAddUser = async () => {
     if (!newUser.name || !newUser.email) return;
-    const id = Date.now();
-    setUsers([...users, { ...newUser, id }]);
-    setNewUser({ name: '', email: '', role: 'user' });
+    try {
+      const createdUser = await AdminAPI.createUser(newUser);
+      setUsers((prev) => [...prev, createdUser]);
+      setNewUser({ name: '', email: '', role: 'user' });
+    } catch (err) {
+      alert(`Erreur lors de l'ajout de l'utilisateur : ${err.message}`);
+    }
   };
 
-  const handleDelete = (id) => {
-    setUsers(users.filter((user) => user.id !== id));
+  const handleDelete = async (id) => {
+    if (!confirm('Voulez-vous vraiment supprimer cet utilisateur ?')) return;
+    try {
+      await AdminAPI.deleteUser(id);
+      setUsers((prev) => prev.filter((user) => user.id !== id));
+    } catch (err) {
+      alert(`Erreur lors de la suppression : ${err.message}`);
+    }
   };
 
-  const handleRoleChange = (id, role) => {
-    setUsers(
-      users.map((user) =>
-        user.id === id ? { ...user, role } : user
-      )
-    );
+  const handleRoleChange = async (id, role) => {
+    try {
+      await AdminAPI.changeUserRole(id, role);
+      setUsers((prev) =>
+        prev.map((user) => (user.id === id ? { ...user, role } : user))
+      );
+    } catch (err) {
+      alert(`Erreur lors du changement de rôle : ${err.message}`);
+    }
   };
+
+  if (loading) return <p>Chargement des utilisateurs...</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
 
   return (
     <div className="space-y-6">

@@ -1,29 +1,53 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { AdminAPI } from '@/app/services/AdminAPI';
 
-export default function SlotManager() {
-  const [slots, setSlots] = useState([
-    { id: 1, jour: 'Lundi', heure: '08:00 - 12:00' },
-    { id: 2, jour: 'Mardi', heure: '14:00 - 18:00' },
-  ]);
+export function SlotManager() {
+  const [slots, setSlots] = useState([]);
   const [jour, setJour] = useState('');
   const [heure, setHeure] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const ajouterCreneau = () => {
-    const nouveau = {
-      id: Date.now(),
-      jour,
-      heure,
-    };
-    setSlots([...slots, nouveau]);
-    setJour('');
-    setHeure('');
+  // Charger les créneaux au montage
+  useEffect(() => {
+    async function fetchSlots() {
+      try {
+        const data = await AdminAPI.getSlots();
+        setSlots(data);
+      } catch (err) {
+        setError(err.message || 'Erreur lors du chargement des créneaux');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchSlots();
+  }, []);
+
+  const ajouterCreneau = async () => {
+    if (!jour || !heure) return;
+    try {
+      const nouveau = await AdminAPI.createSlot({ jour, heure });
+      setSlots((prev) => [...prev, nouveau]);
+      setJour('');
+      setHeure('');
+    } catch (err) {
+      alert(`Erreur lors de l'ajout du créneau : ${err.message}`);
+    }
   };
 
-  const supprimerCreneau = (id) => {
-    setSlots(slots.filter((slot) => slot.id !== id));
+  const supprimerCreneau = async (id) => {
+    try {
+      await AdminAPI.deleteSlot(id);
+      setSlots((prev) => prev.filter((slot) => slot.id !== id));
+    } catch (err) {
+      alert(`Erreur lors de la suppression du créneau : ${err.message}`);
+    }
   };
+
+  if (loading) return <p>Chargement des créneaux...</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
 
   return (
     <div>
@@ -43,7 +67,10 @@ export default function SlotManager() {
           onChange={(e) => setHeure(e.target.value)}
           className="border p-2 rounded w-full"
         />
-        <button onClick={ajouterCreneau} className="bg-blue-600 text-white px-4 py-2 rounded">
+        <button
+          onClick={ajouterCreneau}
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
           Ajouter
         </button>
       </div>
@@ -51,7 +78,10 @@ export default function SlotManager() {
       <h4 className="text-xl font-semibold mb-2">Créneaux existants</h4>
       <ul className="space-y-2">
         {slots.map((slot) => (
-          <li key={slot.id} className="flex justify-between items-center border p-2 rounded">
+          <li
+            key={slot.id}
+            className="flex justify-between items-center border p-2 rounded"
+          >
             {slot.jour} – {slot.heure}
             <button
               onClick={() => supprimerCreneau(slot.id)}

@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import FerryOffersManager from '../components/admin/FerryOffersManager';
+import FerryDashboard from '../components/admin/FerryOffersManager';
 import UserManager from '../components/admin/UsersManager';
-import SlotManager from '../components/admin/SlotManager';
-import ReservationDashboardComponent from '../components/admin/ReservationDashboard';
+import { SlotManager } from '../components/admin/SlotManager';
+import { ReservationDashboard } from '../components/admin/ReservationDashboard';
 
 const tabs = [
   {
@@ -83,7 +83,7 @@ export default function AdminPage() {
         {activeTab === 'ferries' && (
           <section>
             <h3 className="text-2xl font-semibold mb-4">Offres de ferry</h3>
-            <FerryOffersManager />
+            <FerryDashboard />
           </section>
         )}
         {activeTab === 'users' && (
@@ -101,7 +101,7 @@ export default function AdminPage() {
         {activeTab === 'reservations' && (
           <section>
             <h3 className="text-2xl font-semibold mb-4">Réservations</h3>
-            <ReservationDashboardComponent />
+            <ReservationDashboard />
           </section>
         )}
       </main>

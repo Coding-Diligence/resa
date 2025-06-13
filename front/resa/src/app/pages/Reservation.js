@@ -75,7 +75,7 @@ useEffect(() => {
             if (!token) return;
 
             try {
-                const response = await fetch("http://localhost:8080/api/destinations", {
+                const response = await fetch("http://localhost:1845/api/destinations", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -129,7 +129,7 @@ useEffect(() => {
               }
 
               try {
-                  const response = await fetch("http://localhost:8080/api/travels", {
+                  const response = await fetch("http://localhost:1845/api/travels", {
                       headers: {
                           Authorization: `Bearer ${token}`,
                       },

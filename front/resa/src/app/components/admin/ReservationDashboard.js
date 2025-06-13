@@ -1,15 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { AdminAPI } from '@/app/services/AdminAPI';
 
-export default function ReservationDashboard() {
-  const [reservations] = useState([
-    { id: 1, nom: 'Jean Dupont', destination: 'Nice - Bastia', date: '2025-07-12' },
-    { id: 2, nom: 'Marie Curie', destination: 'Marseille - Ajaccio', date: '2025-08-05' },
-  ]);
+export function ReservationDashboard() {
+  const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchReservations() {
+      try {
+        const data = await AdminAPI.getBookings();
+        setReservations(data);
+      } catch (err) {
+        setError(err.message || 'Erreur inconnue');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchReservations();
+  }, []);
 
   const exporterCSV = () => {
-    const contenu = ['Nom,Destination,Date', ...reservations.map(r => `${r.nom},${r.destination},${r.date}`)];
+    const contenu = [
+      'Nom,Destination,Date',
+      ...reservations.map(r => `${r.nom},${r.destination},${r.date}`)
+    ];
     const blob = new Blob([contenu.join('\n')], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -18,6 +36,9 @@ export default function ReservationDashboard() {
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  if (loading) return <p>Chargement...</p>;
+  if (error) return <p className="text-red-600">Erreur : {error}</p>;
 
   return (
     <div>

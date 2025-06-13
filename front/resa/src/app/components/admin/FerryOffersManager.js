@@ -1,30 +1,62 @@
 'use client';
 
-import { useState } from 'react';
-
-const initialFerries = [
-  { id: 1, name: 'Ferry Express', destination: 'Bastia', price: 49.99 },
-  { id: 2, name: 'Mer Rapide', destination: 'Ajaccio', price: 59.99 },
-];
+import { useState, useEffect } from 'react';
+import { AdminAPI } from '@/app/services/AdminAPI';
 
 export default function FerryDashboard() {
-  const [ferries, setFerries] = useState(initialFerries);
+  const [ferries, setFerries] = useState([]);
   const [newFerry, setNewFerry] = useState({ name: '', destination: '', price: '' });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Chargement initial des ferries
+  useEffect(() => {
+    async function fetchFerries() {
+      try {
+        const data = await AdminAPI.getFerries();
+        setFerries(data);
+      } catch (err) {
+        setError(err.message || 'Erreur lors du chargement des ferries');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchFerries();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewFerry({ ...newFerry, [name]: value });
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!newFerry.name || !newFerry.destination || !newFerry.price) return;
-    setFerries([...ferries, { ...newFerry, id: Date.now(), price: parseFloat(newFerry.price) }]);
-    setNewFerry({ name: '', destination: '', price: '' });
+    try {
+      const ferryToAdd = {
+        name: newFerry.name,
+        destination: newFerry.destination,
+        price: parseFloat(newFerry.price),
+      };
+      const createdFerry = await AdminAPI.createFerry(ferryToAdd);
+      setFerries((prev) => [...prev, createdFerry]);
+      setNewFerry({ name: '', destination: '', price: '' });
+    } catch (err) {
+      alert(`Erreur lors de l'ajout : ${err.message}`);
+    }
   };
 
-  const handleDelete = (id) => {
-    setFerries(ferries.filter((ferry) => ferry.id !== id));
+  const handleDelete = async (id) => {
+    if (!confirm('Voulez-vous vraiment supprimer ce ferry ?')) return;
+    try {
+      await AdminAPI.deleteFerry(id);
+      setFerries((prev) => prev.filter((f) => f.id !== id));
+    } catch (err) {
+      alert(`Erreur lors de la suppression : ${err.message}`);
+    }
   };
+
+  if (loading) return <p>Chargement des ferries...</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
 
   return (
     <div>
@@ -78,7 +110,7 @@ export default function FerryDashboard() {
                   onClick={() => handleDelete(ferry.id)}
                   className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
                 >
-                  Supprimer 
+                  Supprimer
                 </button>
               </td>
             </tr>
