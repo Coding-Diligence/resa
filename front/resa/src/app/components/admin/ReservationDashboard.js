@@ -21,9 +21,9 @@ export default function ReservationDashboard() {
 
   return (
     <div>
-      <h3 className="text-2xl font-semibold mb-4">Réservations</h3>
+      {/* <h3 className="text-2xl font-semibold mb-4">Réservations</h3> */}
       <table className="w-full table-auto border mb-4">
-        <thead className="bg-gray-200">
+        <thead className="bg-sky-950">
           <tr>
             <th className="border px-4 py-2">Nom</th>
             <th className="border px-4 py-2">Destination</th>
