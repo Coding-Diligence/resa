@@ -2,124 +2,190 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
+// Données de test pour un utilisateur connecté (Marie Dubois)
+const USER_INFO = {
+  id: 1,
+  name: "Marie Dubois",
+  email: "marie.dubois@email.com",
+  phone: "+33 6 12 34 56 78"
+};
+
+const MOCK_RESERVATIONS = [
+  {
+    id: "RES-2025-001",
+    booking_reference: "MB2025001",
+    passenger_name: "Marie Dubois",
+    passenger_email: "marie.dubois@email.com",
+    passenger_phone: "+33 6 12 34 56 78",
+    
+    // Informations du voyage
+    ferry_name: "Titanic",
+    ferry_company: "Titanic",
+    route: "Portsmouth → Le Havre",
+    departure_port: "Portsmouth",
+    arrival_port: "Le Havre",
+    departure_date: "2025-07-15",
+    departure_time: "23:00",
+    arrival_date: "2025-07-16",
+    arrival_time: "08:30",
+    duration: "9h 30min",
+    
+    // Détails de la réservation
+    nb_passengers: 2,
+    nb_vehicles: 1,
+    vehicle_type: "Voiture (< 6m)",
+    cabin_type: "Cabine 2 lits",
+    cabin_number: "A-245",
+    total_price: 485.50,
+    currency: "EUR",
+    
+    // Statut et dates
+    status: "confirmed",
+    booking_date: "2025-06-10T14:30:00Z",
+    payment_status: "paid"
+  },
+  {
+    id: "RES-2025-002",
+    booking_reference: "MB2025002",
+    passenger_name: "Marie Dubois",
+    passenger_email: "marie.dubois@email.com",
+    passenger_phone: "+33 6 12 34 56 78",
+    
+    ferry_name: "Destination Valhalha",
+    ferry_company: "Destination Valhalha",
+    route: "Calais → Douvres",
+    departure_port: "Calais",
+    arrival_port: "Douvres",
+    departure_date: "2025-08-22",
+    departure_time: "14:30",
+    arrival_date: "2025-08-22",
+    arrival_time: "16:00",
+    duration: "1h 30min",
+    
+    nb_passengers: 4,
+    nb_vehicles: 1,
+    vehicle_type: "Voiture (< 6m)",
+    cabin_type: "Siège inclinable",
+    cabin_number: null,
+    total_price: 224.00,
+    currency: "EUR",
+    
+    status: "pending",
+    booking_date: "2025-06-11T09:15:00Z",
+    payment_status: "pending"
+  },
+  {
+    id: "RES-2025-003", 
+    booking_reference: "MB2025003",
+    passenger_name: "Marie Dubois",
+    passenger_email: "marie.dubois@email.com",
+    passenger_phone: "+33 6 12 34 56 78",
+    
+    ferry_name: "Destination Finale",
+    ferry_company: "Destination Finale",
+    route: "Nice → Bastia",
+    departure_port: "Nice",
+    arrival_port: "Bastia",
+    departure_date: "2025-05-28",
+    departure_time: "17:30",
+    arrival_date: "2025-05-29", 
+    arrival_time: "01:30",
+    duration: "8h 00min",
+    
+    nb_passengers: 2,
+    nb_vehicles: 0,
+    vehicle_type: null,
+    cabin_type: "Pont libre",
+    cabin_number: null,
+    total_price: 156.00,
+    currency: "EUR",
+    
+    status: "completed",
+    booking_date: "2025-04-15T16:45:00Z",
+    payment_status: "paid"
+  },
+  {
+    id: "RES-2025-004",
+    booking_reference: "MB2025004", 
+    passenger_name: "Marie Dubois",
+    passenger_email: "marie.dubois@email.com",
+    passenger_phone: "+33 6 12 34 56 78",
+    
+    ferry_name: "Black Pearl",
+    ferry_company: "Black Pearl",
+    route: "Cherbourg → Rosslare",
+    departure_port: "Cherbourg",
+    arrival_port: "Rosslare",
+    departure_date: "2025-09-10",
+    departure_time: "16:30",
+    arrival_date: "2025-09-11",
+    arrival_time: "10:45",
+    duration: "18h 15min",
+    
+    nb_passengers: 3,
+    nb_vehicles: 1,
+    vehicle_type: "Camping-car (< 8m)",
+    cabin_type: "Cabine 4 lits",
+    cabin_number: "B-112",
+    total_price: 678.75,
+    currency: "EUR",
+    
+    status: "cancelled",
+    booking_date: "2025-06-09T11:20:00Z",
+    payment_status: "refunded"
+  }
+];
+
 const useReservationsData = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [lastFetch, setLastFetch] = useState(0);
 
-  const fetchReservations = useCallback(async (forceRefresh = false) => {
-    const cacheExpiry = 5 * 60 * 1000; 
-    const now = Date.now();
-    
-    if (!forceRefresh && reservations.length > 0 && (now - lastFetch) < cacheExpiry) {
-      return;
-    }
-
+  const fetchReservations = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-      const response = await fetch('http://localhost:8080/api/travels', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status} - ${response.statusText}`);
-      }
-
-      const data = await response.json();
+      // Simulation d'un délai réseau
+      await new Promise(resolve => setTimeout(resolve, 100));
       
-      if (!Array.isArray(data)) {
-        throw new Error('Format de données invalide: attendu un tableau');
-      }
-
-      setReservations(data);
-      setLastFetch(now);
+      setReservations([...MOCK_RESERVATIONS]);
     } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        setError('Délai d\'attente dépassé. Vérifiez votre connexion internet.');
-      } else {
-        const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
-        setError(`Impossible de charger les réservations: ${errorMessage}`);
-      }
-      console.error('Erreur lors du fetch:', err);
+      setError('Erreur lors du chargement de vos réservations');
     } finally {
       setLoading(false);
-    }
-  }, [reservations.length, lastFetch]);
-
-  const createReservation = useCallback(async (reservationData) => {
-    try {
-      const response = await fetch('http://localhost:8080/api/travels', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(reservationData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erreur lors de la création: ${response.status}`);
-      }
-
-      const newReservation = await response.json();
-      setReservations(prev => [newReservation, ...prev]);
-      return { success: true, data: newReservation };
-    } catch (err) {
-      console.error('Erreur création:', err);
-      return { success: false, error: err.message };
     }
   }, []);
 
   const updateReservation = useCallback(async (id, reservationData) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/travels/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(reservationData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erreur lors de la modification: ${response.status}`);
-      }
-
-      const updatedReservation = await response.json();
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      const updatedReservation = {
+        ...reservationData,
+        id,
+        booking_date: reservations.find(r => r.id === id)?.booking_date || new Date().toISOString()
+      };
+      
       setReservations(prev => prev.map(res => res.id === id ? updatedReservation : res));
       return { success: true, data: updatedReservation };
     } catch (err) {
-      console.error('Erreur modification:', err);
-      return { success: false, error: err.message };
+      return { success: false, error: 'Erreur lors de la modification' };
     }
-  }, []);
+  }, [reservations]);
 
-  const deleteReservation = useCallback(async (id) => {
+  const cancelReservation = useCallback(async (id) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/travels/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erreur lors de la suppression: ${response.status}`);
-      }
-
-      setReservations(prev => prev.filter(res => res.id !== id));
+      await new Promise(resolve => setTimeout(resolve, 600));
+      
+      setReservations(prev => prev.map(res => 
+        res.id === id 
+          ? { ...res, status: 'cancelled', payment_status: 'refund_pending' }
+          : res
+      ));
       return { success: true };
     } catch (err) {
-      console.error('Erreur suppression:', err);
-      return { success: false, error: err.message };
+      return { success: false, error: 'Erreur lors de l\'annulation' };
     }
   }, []);
 
@@ -128,104 +194,119 @@ const useReservationsData = () => {
     loading, 
     error, 
     fetchReservations, 
-    createReservation,
     updateReservation,
-    deleteReservation,
-    refetch: () => fetchReservations(true) 
+    cancelReservation,
+    refetch: fetchReservations
   };
 };
 
-export default function ReservationList() {
+export default function MyReservations() {
   const { 
     reservations, 
     loading, 
     error, 
     fetchReservations, 
     updateReservation,
-    deleteReservation,
+    cancelReservation,
     refetch 
   } = useReservationsData();
 
   const [searchFilter, setSearchFilter] = useState('');
-  const [sortBy, setSortBy] = useState('created_at');
+  const [sortBy, setSortBy] = useState('departure_date');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState('view'); // 'edit', 'view', 'delete'
+  const [modalMode, setModalMode] = useState('view');
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [notification, setNotification] = useState(null);
-  
-  // État du formulaire
-  const [formData, setFormData] = useState({
-    customer_name: '',
-    customer_email: '',
-    customer_phone: '',
-    travel_id: '',
-    nb_passengers: 1,
-    nb_vehicles: 0,
-    total_price: 0,
-    status: 'pending'
-  });
 
   useEffect(() => {
     fetchReservations();
-  }, []); // Uniquement au montage du composant
+  }, [fetchReservations]);
 
   // Filtrage et tri des réservations
   const filteredAndSortedReservations = useMemo(() => {
-    let filtered = reservations.filter(reservation => 
-      reservation.customer_name?.toLowerCase().includes(searchFilter.toLowerCase()) ||
-      reservation.customer_email?.toLowerCase().includes(searchFilter.toLowerCase()) ||
-      reservation.status?.toLowerCase().includes(searchFilter.toLowerCase())
-    );
+    let filtered = reservations.filter(reservation => {
+      const matchesSearch = 
+        reservation.ferry_name?.toLowerCase().includes(searchFilter.toLowerCase()) ||
+        reservation.route?.toLowerCase().includes(searchFilter.toLowerCase()) ||
+        reservation.booking_reference?.toLowerCase().includes(searchFilter.toLowerCase()) ||
+        reservation.departure_port?.toLowerCase().includes(searchFilter.toLowerCase()) ||
+        reservation.arrival_port?.toLowerCase().includes(searchFilter.toLowerCase());
+      
+      const matchesStatus = statusFilter === 'all' || reservation.status === statusFilter;
+      
+      return matchesSearch && matchesStatus;
+    });
 
     return filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'customer_name':
-          return (a.customer_name || '').localeCompare(b.customer_name || '');
+        case 'ferry_name':
+          return (a.ferry_name || '').localeCompare(b.ferry_name || '');
         case 'total_price':
           return a.total_price - b.total_price;
         case 'status':
           return (a.status || '').localeCompare(b.status || '');
-        case 'created_at':
+        case 'departure_date':
         default:
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          return new Date(a.departure_date + ' ' + a.departure_time).getTime() - 
+                 new Date(b.departure_date + ' ' + b.departure_time).getTime();
       }
     });
-  }, [reservations, searchFilter, sortBy]);
+  }, [reservations, searchFilter, sortBy, statusFilter]);
 
   // Fonctions utilitaires
-  const formatDateTime = (dateString) => {
+  const formatDate = (date) => {
     try {
-      const date = new Date(dateString);
-      return date.toLocaleString('fr-FR', {
+      return new Date(date).toLocaleDateString('fr-FR', {
         day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        month: '2-digit', 
+        year: 'numeric'
       });
     } catch {
       return 'Date invalide';
     }
   };
 
-  const formatPrice = (price) => {
+  const formatTime = (time) => {
+    return time || 'N/A';
+  };
+
+  const formatPrice = (price, currency = 'EUR') => {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
-      currency: 'EUR'
+      currency: currency
     }).format(price);
   };
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      pending: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', border: 'border-yellow-500/30', label: 'En attente' },
-      confirmed: { bg: 'bg-green-500/20', text: 'text-green-400', border: 'border-green-500/30', label: 'Confirmée' },
-      cancelled: { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/30', label: 'Annulée' },
-      completed: { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30', label: 'Terminée' }
+      pending: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', border: 'border-yellow-500/30', label: 'En attente', icon: '⏳' },
+      confirmed: { bg: 'bg-green-500/20', text: 'text-green-400', border: 'border-green-500/30', label: 'Confirmée', icon: '✅' },
+      cancelled: { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/30', label: 'Annulée', icon: '❌' },
+      completed: { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30', label: 'Voyage effectué', icon: '🎯' }
     };
     
     const config = statusConfig[status] || statusConfig.pending;
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${config.bg} ${config.text} ${config.border}`}>
+      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium border ${config.bg} ${config.text} ${config.border}`}>
+        <span className="text-xs">{config.icon}</span>
+        {config.label}
+      </span>
+    );
+  };
+
+  const getPaymentBadge = (paymentStatus) => {
+    const statusConfig = {
+      paid: { bg: 'bg-green-500/20', text: 'text-green-400', border: 'border-green-500/30', label: 'Payé', icon: '💳' },
+      pending: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', border: 'border-yellow-500/30', label: 'En attente', icon: '⏱️' },
+      refunded: { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30', label: 'Remboursé', icon: '💰' },
+      refund_pending: { bg: 'bg-orange-500/20', text: 'text-orange-400', border: 'border-orange-500/30', label: 'Remb. en cours', icon: '🔄' }
+    };
+    
+    const config = statusConfig[paymentStatus] || statusConfig.pending;
+    return (
+      <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${config.bg} ${config.text} ${config.border}`}>
+        <span className="text-xs">{config.icon}</span>
         {config.label}
       </span>
     );
@@ -235,20 +316,6 @@ export default function ReservationList() {
   const openModal = (mode, reservation = null) => {
     setModalMode(mode);
     setSelectedReservation(reservation);
-    
-    if (mode === 'edit' && reservation) {
-      setFormData({
-        customer_name: reservation.customer_name || '',
-        customer_email: reservation.customer_email || '',
-        customer_phone: reservation.customer_phone || '',
-        travel_id: reservation.travel_id || '',
-        nb_passengers: reservation.nb_passengers || 1,
-        nb_vehicles: reservation.nb_vehicles || 0,
-        total_price: reservation.total_price || 0,
-        status: reservation.status || 'pending'
-      });
-    }
-    
     setShowModal(true);
   };
 
@@ -256,16 +323,6 @@ export default function ReservationList() {
     setShowModal(false);
     setModalMode('view');
     setSelectedReservation(null);
-    setFormData({
-      customer_name: '',
-      customer_email: '',
-      customer_phone: '',
-      travel_id: '',
-      nb_passengers: 1,
-      nb_vehicles: 0,
-      total_price: 0,
-      status: 'pending'
-    });
   };
 
   // Affichage de notifications
@@ -274,36 +331,18 @@ export default function ReservationList() {
     setTimeout(() => setNotification(null), 5000);
   };
 
-  // Gestion du formulaire
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const handleCancel = async () => {
     try {
-      const result = await updateReservation(selectedReservation.id, formData);
-
-      if (result.success) {
-        showNotification('Réservation modifiée avec succès');
-        closeModal();
-      } else {
-        showNotification(result.error, 'error');
-      }
-    } catch (err) {
-      showNotification('Une erreur est survenue', 'error');
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      const result = await deleteReservation(selectedReservation.id);
+      const result = await cancelReservation(selectedReservation.id);
       
       if (result.success) {
-        showNotification('Réservation supprimée avec succès');
+        showNotification('Réservation annulée avec succès. Le remboursement sera traité sous 5-7 jours ouvrés.');
         closeModal();
       } else {
         showNotification(result.error, 'error');
       }
     } catch (err) {
-      showNotification('Erreur lors de la suppression', 'error');
+      showNotification('Erreur lors de l\'annulation', 'error');
     }
   };
 
@@ -312,7 +351,7 @@ export default function ReservationList() {
       <div className="min-h-screen bg-sky-950/70 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
-          <p className="text-gray-300 text-lg">Chargement des réservations...</p>
+          <p className="text-gray-300 text-lg">Chargement de vos réservations...</p>
         </div>
       </div>
     );
@@ -360,7 +399,7 @@ export default function ReservationList() {
       `}</style>
 
       <div className="min-h-screen bg-sky-950/70 py-8">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-7xl">
           {/* Notification */}
           {notification && (
             <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg border animate-slideIn ${
@@ -378,235 +417,353 @@ export default function ReservationList() {
             </div>
           )}
 
-          {/* En-tête */}
+          {/* En-tête utilisateur */}
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Liste des Réservations
-            </h1>
-            <p className="text-gray-400">
-              Consultez et gérez les réservations - {filteredAndSortedReservations.length} réservation{filteredAndSortedReservations.length > 1 ? 's' : ''}
-            </p>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                {USER_INFO.name.split(' ').map(n => n[0]).join('')}
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold text-white bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                  Mes Réservations Ferry
+                </h1>
+                <p className="text-gray-400">
+                  Bonjour {USER_INFO.name} • {filteredAndSortedReservations.length} réservation{filteredAndSortedReservations.length > 1 ? 's' : ''}
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Barre d'actions */}
-          <div className="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-            <div className="flex flex-col md:flex-row gap-4 flex-1">
-              {/* Recherche */}
-              <div className="relative flex-1 max-w-md">
-                <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Rechercher par nom, email ou statut..."
-                  value={searchFilter}
-                  onChange={(e) => setSearchFilter(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-sky-950 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-700 focus:border-transparent"
-                />
+          {/* Barre de filtres */}
+          <div className="mb-6 space-y-4">
+            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+              <div className="flex flex-col md:flex-row gap-4 flex-1">
+                {/* Recherche */}
+                <div className="relative flex-1 max-w-md">
+                  <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Rechercher par ferry, destination, référence..."
+                    value={searchFilter}
+                    onChange={(e) => setSearchFilter(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-sky-900 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {/* Filtre par statut */}
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-4 py-3 bg-sky-950/70 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">Tous les statuts</option>
+                  <option value="pending">En attente</option>
+                  <option value="confirmed">Confirmées</option>
+                  <option value="completed">Voyages effectués</option>
+                  <option value="cancelled">Annulées</option>
+                </select>
+
+                {/* Tri */}
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-4 py-3 bg-sky-950/70 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="departure_date">Date de départ</option>
+                  <option value="ferry_name">Nom du ferry</option>
+                  <option value="total_price">Prix</option>
+                  <option value="status">Statut</option>
+                </select>
               </div>
 
-              {/* Tri */}
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-3 bg-sky-950 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="created_at">Date de création</option>
-                <option value="customer_name">Nom client</option>
-                <option value="total_price">Prix total</option>
-                <option value="status">Statut</option>
-              </select>
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-3">
-              <button
-                onClick={refetch}
-                className="flex items-center space-x-2 px-4 py-3 bg-sky-950/70 hover:bg-sky-950/60 text-gray-300 hover:text-white rounded-lg transition-all duration-200"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-                <span>Actualiser</span>
-              </button>
+              {/* Actions */}
+              <div className="flex gap-3">
+                <button
+                  onClick={refetch}
+                  className="flex items-center space-x-2 px-4 py-3 bg-sky-950/70 hover:bg-sky-950/60 text-gray-300 hover:text-white rounded-lg transition-all duration-200"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  <span>Actualiser</span>
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Liste des réservations */}
           {filteredAndSortedReservations.length === 0 ? (
-            <div className="bg-sky-950 rounded-lg p-8 text-center">
+            <div className="bg-sky-900 rounded-lg p-8 text-center">
               <svg className="w-16 h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
               </svg>
               <h3 className="text-xl font-semibold text-gray-300 mb-2">
-                {searchFilter ? 'Aucune réservation trouvée' : 'Aucune réservation'}
+                {searchFilter || statusFilter !== 'all' ? 'Aucune réservation trouvée' : 'Aucune réservation'}
               </h3>
               <p className="text-gray-500 mb-4">
-                {searchFilter 
-                  ? `Aucune réservation ne correspond à "${searchFilter}"`
-                  : 'Il n\'y a actuellement aucune réservation disponible'
+                {searchFilter || statusFilter !== 'all'
+                  ? 'Aucune réservation ne correspond à vos critères de recherche'
+                  : 'Vous n\'avez pas encore effectué de réservation de ferry'
                 }
               </p>
-              {searchFilter && (
+              {(searchFilter || statusFilter !== 'all') && (
                 <button
-                  onClick={() => setSearchFilter('')}
-                  className="bg-sky-800 hover:bg-sky-900 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                  onClick={() => {
+                    setSearchFilter('');
+                    setStatusFilter('all');
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
                 >
-                  Effacer la recherche
+                  Réinitialiser les filtres
                 </button>
               )}
             </div>
           ) : (
-            <div className="bg-sky-950-800 rounded-lg overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-sky-950-700">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Client</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Contact</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Voyage</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Détails</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Prix</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Statut</th>
-                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Date</th>
-                      <th className="px-6 py-4 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-700">
-                    {filteredAndSortedReservations.map((reservation, index) => (
-                      <tr 
-                        key={reservation.id} 
-                        className="hover:bg-sky-950-700/50 transition-colors duration-200"
-                        style={{
-                          animationDelay: `${index * 50}ms`,
-                          animation: 'slideIn 0.3s ease-out forwards'
-                        }}
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap">
+            <div className="grid gap-6">
+              {filteredAndSortedReservations.map((reservation, index) => (
+                <div 
+                  key={reservation.id}
+                  className="bg-sky-900 rounded-lg border border-gray-700 hover:border-gray-600 transition-all duration-200 overflow-hidden"
+                  style={{
+                    animationDelay: `${index * 100}ms`,
+                    animation: 'slideIn 0.3s ease-out forwards'
+                  }}
+                >
+                  {/* En-tête de la carte */}
+                  <div className="bg-sky-700/50 px-6 py-4 border-b border-gray-700">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">🚢</span>
                           <div>
-                            <div className="text-sm font-medium text-white">{reservation.customer_name || 'N/A'}</div>
-                            <div className="text-sm text-gray-400">ID: {reservation.id}</div>
+                            <h3 className="text-lg font-semibold text-white">{reservation.ferry_name}</h3>
+                            <p className="text-sm text-gray-400">{reservation.ferry_company}</p>
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-white">{reservation.customer_email || 'N/A'}</div>
-                          <div className="text-sm text-gray-400">{reservation.customer_phone || 'N/A'}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-white">Voyage #{reservation.travel_id || 'N/A'}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-white">{reservation.nb_passengers || 0} passager{(reservation.nb_passengers || 0) > 1 ? 's' : ''}</div>
-                          <div className="text-sm text-gray-400">{reservation.nb_vehicles || 0} véhicule{(reservation.nb_vehicles || 0) > 1 ? 's' : ''}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-semibold text-white">{formatPrice(reservation.total_price || 0)}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {getStatusBadge(reservation.status)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                          {formatDateTime(reservation.created_at)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <div className="flex justify-end space-x-2">
-                            <button
-                              onClick={() => openModal('view', reservation)}
-                              className="text-blue-400 hover:text-blue-300 p-2 hover:bg-blue-500/20 rounded-lg transition-all duration-200"
-                              title="Voir"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => openModal('edit', reservation)}
-                              className="text-yellow-400 hover:text-yellow-300 p-2 hover:bg-yellow-500/20 rounded-lg transition-all duration-200"
-                              title="Modifier"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => openModal('delete', reservation)}
-                              className="text-red-400 hover:text-red-300 p-2 hover:bg-red-500/20 rounded-lg transition-all duration-200"
-                              title="Supprimer"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                              </svg>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* Modal */}
-          {showModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 backdrop-blur-sm">
-              <div className="bg-sky-950-800 rounded-2xl p-8 max-w-md w-full mx-4 border border-gray-700 shadow-2xl max-h-[90vh] overflow-y-auto">
-                
-                {/* Mode Affichage */}
-                {modalMode === 'view' && selectedReservation && (
-                  <>
-                    <div className="text-center mb-6">
-                      <h3 className="text-2xl font-bold text-white mb-2">Détails de la Réservation</h3>
-                      <p className="text-gray-400">ID: {selectedReservation.id}</p>
+                        </div>
+                        <div className="hidden lg:block text-gray-500">•</div>
+                        <div className="text-sm text-gray-300">
+                          Réf: <span className="font-mono font-medium">{reservation.booking_reference}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {getStatusBadge(reservation.status)}
+                        {getPaymentBadge(reservation.payment_status)}
+                      </div>
                     </div>
+                  </div>
 
-                    <div className="space-y-4">
-                      <div className="bg-sky-950-700 rounded-lg p-4">
-                        <h4 className="text-white font-semibold mb-2">Informations Client</h4>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Nom:</span>
-                            <span className="text-white">{selectedReservation.customer_name || 'N/A'}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Email:</span>
-                            <span className="text-white">{selectedReservation.customer_email || 'N/A'}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Téléphone:</span>
-                            <span className="text-white">{selectedReservation.customer_phone || 'N/A'}</span>
+                  {/* Contenu principal */}
+                  <div className="p-6">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {/* Itinéraire */}
+                      <div className="space-y-3">
+                        <h4 className="text-white font-semibold flex items-center gap-2">
+                          <span className="text-blue-400">🗺️</span>
+                          Itinéraire
+                        </h4>
+                        <div className="bg-sky-700/30 rounded-lg p-4">
+                          <div className="flex items-center justify-between text-sm">
+                            <div className="text-center">
+                              <div className="text-white font-medium">{reservation.departure_port}</div>
+                              <div className="text-gray-400">Départ</div>
+                              <div className="text-blue-400 font-mono text-xs mt-1">
+                                {formatDate(reservation.departure_date)}
+                              </div>
+                              <div className="text-blue-400 font-mono text-sm font-semibold">
+                                {formatTime(reservation.departure_time)}
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-center">
+                              <div className="text-gray-400 text-xs mb-1">Durée</div>
+                              <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                <div className="w-8 h-0.5 bg-blue-400"></div>
+                                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                              </div>
+                              <div className="text-white text-xs font-medium mt-1">{reservation.duration}</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-white font-medium">{reservation.arrival_port}</div>
+                              <div className="text-gray-400">Arrivée</div>
+                              <div className="text-green-400 font-mono text-xs mt-1">
+                                {formatDate(reservation.arrival_date)}
+                              </div>
+                              <div className="text-green-400 font-mono text-sm font-semibold">
+                                {formatTime(reservation.arrival_time)}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
 
-                      <div className="bg-sky-950-700 rounded-lg p-4">
-                        <h4 className="text-white font-semibold mb-2">Détails de la Réservation</h4>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Voyage ID:</span>
-                            <span className="text-white">{selectedReservation.travel_id || 'N/A'}</span>
+                      {/* Détails de la réservation */}
+                      <div className="space-y-3">
+                        <h4 className="text-white font-semibold flex items-center gap-2">
+                          <span className="text-purple-400">👥</span>
+                          Réservation
+                        </h4>
+                        <div className="bg-sky-700/30 rounded-lg p-4 space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">Passagers:</span>
+                            <span className="text-white font-medium">{reservation.nb_passengers}</span>
                           </div>
+                          {reservation.nb_vehicles > 0 && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-400">Véhicule:</span>
+                              <span className="text-white font-medium">{reservation.vehicle_type}</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">Hébergement:</span>
+                            <span className="text-white font-medium">{reservation.cabin_type}</span>
+                          </div>
+                          {reservation.cabin_number && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-400">Cabine:</span>
+                              <span className="text-white font-medium">{reservation.cabin_number}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Prix et actions */}
+                      <div className="space-y-3">
+                        <h4 className="text-white font-semibold flex items-center gap-2">
+                          <span className="text-green-400">💰</span>
+                          Prix & Actions
+                        </h4>
+                        <div className="bg-sky-700/30 rounded-lg p-4">
+                          <div className="text-center mb-4">
+                            <div className="text-2xl font-bold text-white">
+                              {formatPrice(reservation.total_price, reservation.currency)}
+                            </div>
+                            <div className="text-sm text-gray-400">Prix total</div>
+                          </div>
+                          <div className="space-y-2">
+                            <button
+                              onClick={() => openModal('view', reservation)}
+                              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors duration-200 text-sm"
+                            >
+                              Voir les détails
+                            </button>
+                            {reservation.status === 'confirmed' && (
+                              <button
+                                onClick={() => openModal('cancel', reservation)}
+                                className="w-full bg-red-600/80 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition-colors duration-200 text-sm"
+                              >
+                                Annuler
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Modal */}
+          {showModal && selectedReservation && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 backdrop-blur-sm">
+              <div className="bg-sky-900 rounded-2xl p-8 max-w-2xl w-full mx-4 border border-gray-700 shadow-2xl max-h-[90vh] overflow-y-auto">
+                
+                {/* Mode Affichage détaillé */}
+                {modalMode === 'view' && (
+                  <>
+                    <div className="text-center mb-6">
+                      <div className="flex items-center justify-center gap-3 mb-3">
+                        <span className="text-3xl">🚢</span>
+                        <div>
+                          <h3 className="text-2xl font-bold text-white">{selectedReservation.ferry_name}</h3>
+                          <p className="text-gray-400">{selectedReservation.ferry_company}</p>
+                        </div>
+                      </div>
+                      <p className="text-gray-400">Référence: {selectedReservation.booking_reference}</p>
+                    </div>
+
+                    <div className="space-y-6">
+                      {/* Itinéraire détaillé */}
+                      <div className="bg-sky-700 rounded-lg p-5">
+                        <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                          <span className="text-blue-400">🗺️</span>
+                          Itinéraire complet
+                        </h4>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                            <div className="text-blue-400 text-sm font-medium mb-2">DÉPART</div>
+                            <div className="text-white text-lg font-semibold">{selectedReservation.departure_port}</div>
+                            <div className="text-gray-300 text-sm mt-1">
+                              {formatDate(selectedReservation.departure_date)} à {formatTime(selectedReservation.departure_time)}
+                            </div>
+                          </div>
+                          <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+                            <div className="text-green-400 text-sm font-medium mb-2">ARRIVÉE</div>
+                            <div className="text-white text-lg font-semibold">{selectedReservation.arrival_port}</div>
+                            <div className="text-gray-300 text-sm mt-1">
+                              {formatDate(selectedReservation.arrival_date)} à {formatTime(selectedReservation.arrival_time)}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-center mt-4">
+                          <div className="text-gray-400 text-sm">Durée du voyage</div>
+                          <div className="text-white font-semibold">{selectedReservation.duration}</div>
+                        </div>
+                      </div>
+
+                      {/* Détails de la réservation */}
+                      <div className="bg-sky-700 rounded-lg p-5">
+                        <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                          <span className="text-purple-400">🎫</span>
+                          Détails de la réservation
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
                           <div className="flex justify-between">
                             <span className="text-gray-400">Passagers:</span>
-                            <span className="text-white">{selectedReservation.nb_passengers || 0}</span>
+                            <span className="text-white font-medium">{selectedReservation.nb_passengers}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-400">Véhicules:</span>
-                            <span className="text-white">{selectedReservation.nb_vehicles || 0}</span>
+                            <span className="text-white font-medium">{selectedReservation.nb_vehicles || 0}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Prix total:</span>
-                            <span className="text-white font-semibold">{formatPrice(selectedReservation.total_price || 0)}</span>
+                          {selectedReservation.vehicle_type && (
+                            <div className="flex justify-between col-span-2">
+                              <span className="text-gray-400">Type véhicule:</span>
+                              <span className="text-white font-medium">{selectedReservation.vehicle_type}</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between col-span-2">
+                            <span className="text-gray-400">Hébergement:</span>
+                            <span className="text-white font-medium">{selectedReservation.cabin_type}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Statut:</span>
-                            <span>{getStatusBadge(selectedReservation.status)}</span>
+                          {selectedReservation.cabin_number && (
+                            <div className="flex justify-between col-span-2">
+                              <span className="text-gray-400">Numéro de cabine:</span>
+                              <span className="text-white font-medium">{selectedReservation.cabin_number}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Informations de paiement */}
+                      <div className="bg-sky-700 rounded-lg p-5">
+                        <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                          <span className="text-green-400">💳</span>
+                          Paiement
+                        </h4>
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <div className="text-2xl font-bold text-white">
+                              {formatPrice(selectedReservation.total_price, selectedReservation.currency)}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              Réservé le {new Date(selectedReservation.booking_date).toLocaleDateString('fr-FR')}
+                            </div>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-400">Créée le:</span>
-                            <span className="text-white">{formatDateTime(selectedReservation.created_at)}</span>
-                          </div>
+                          {getPaymentBadge(selectedReservation.payment_status)}
                         </div>
                       </div>
                     </div>
@@ -614,7 +771,7 @@ export default function ReservationList() {
                     <div className="mt-6">
                       <button
                         onClick={closeModal}
-                        className="w-full bg-sky-950-700 hover:bg-sky-950-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
+                        className="w-full bg-sky-700 hover:bg-sky-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
                       >
                         Fermer
                       </button>
@@ -622,190 +779,64 @@ export default function ReservationList() {
                   </>
                 )}
 
-                {/* Mode Suppression */}
-                {modalMode === 'delete' && selectedReservation && (
+                {/* Mode Annulation */}
+                {modalMode === 'cancel' && (
                   <>
                     <div className="text-center mb-6">
                       <div className="bg-red-100 rounded-full p-3 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
                         <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                       </div>
-                      <h3 className="text-2xl font-bold text-white mb-2">Supprimer la Réservation</h3>
-                      <p className="text-gray-400">Cette action est irréversible</p>
+                      <h3 className="text-2xl font-bold text-white mb-2">Annuler la Réservation</h3>
+                      <p className="text-gray-400">Ferry {selectedReservation.ferry_name}</p>
                     </div>
 
-                    <div className="bg-sky-950-700 rounded-lg p-4 mb-6">
-                      <p className="text-white">
-                        Êtes-vous sûr de vouloir supprimer la réservation de <strong>{selectedReservation.customer_name}</strong> ?
-                      </p>
+                    <div className="bg-sky-700 rounded-lg p-4 mb-6 space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Référence:</span>
+                        <span className="text-white font-mono">{selectedReservation.booking_reference}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Trajet:</span>
+                        <span className="text-white">{selectedReservation.route}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Date:</span>
+                        <span className="text-white">{formatDate(selectedReservation.departure_date)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Montant:</span>
+                        <span className="text-white font-semibold">{formatPrice(selectedReservation.total_price)}</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-6">
+                      <div className="flex items-start gap-3">
+                        <span className="text-yellow-400 text-xl">⚠️</span>
+                        <div className="text-sm">
+                          <div className="text-yellow-400 font-medium mb-1">Conditions d'annulation</div>
+                          <div className="text-gray-300">
+                            Le remboursement sera traité sous 5-7 jours ouvrés. Des frais d'annulation peuvent s'appliquer selon les conditions tarifaires.
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="flex space-x-3">
                       <button
                         onClick={closeModal}
-                        className="flex-1 bg-sky-950-700 hover:bg-sky-950-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
+                        className="flex-1 bg-sky-700 hover:bg-sky-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
                       >
-                        Annuler
+                        Garder ma réservation
                       </button>
                       <button
-                        onClick={handleDelete}
+                        onClick={handleCancel}
                         className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
                       >
-                        Supprimer
+                        Confirmer l'annulation
                       </button>
                     </div>
-                  </>
-                )}
-
-                {/* Mode Édition */}
-                {modalMode === 'edit' && (
-                  <>
-                    <div className="text-center mb-6">
-                      <h3 className="text-2xl font-bold text-white mb-2">
-                        Modifier la Réservation
-                      </h3>
-                    </div>
-
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                      {/* Informations client */}
-                      <div className="space-y-4">
-                        <h4 className="text-white font-semibold">Informations Client</h4>
-                        
-                        <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Nom complet *
-                          </label>
-                          <input
-                            type="text"
-                            required
-                            value={formData.customer_name}
-                            onChange={(e) => setFormData({...formData, customer_name: e.target.value})}
-                            className="w-full px-3 py-2 bg-sky-950-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Email *
-                          </label>
-                          <input
-                            type="email"
-                            required
-                            value={formData.customer_email}
-                            onChange={(e) => setFormData({...formData, customer_email: e.target.value})}
-                            className="w-full px-3 py-2 bg-sky-950-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Téléphone
-                          </label>
-                          <input
-                            type="tel"
-                            value={formData.customer_phone}
-                            onChange={(e) => setFormData({...formData, customer_phone: e.target.value})}
-                            className="w-full px-3 py-2 bg-sky-950-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Détails de la réservation */}
-                      <div className="space-y-4">
-                        <h4 className="text-white font-semibold">Détails de la Réservation</h4>
-                        
-                        <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
-                            ID du Voyage *
-                          </label>
-                          <input
-                            type="number"
-                            required
-                            value={formData.travel_id}
-                            onChange={(e) => setFormData({...formData, travel_id: e.target.value})}
-                            className="w-full px-3 py-2 bg-sky-950-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">
-                              Nb Passagers *
-                            </label>
-                            <input
-                              type="number"
-                              min="1"
-                              required
-                              value={formData.nb_passengers}
-                              onChange={(e) => setFormData({...formData, nb_passengers: parseInt(e.target.value) || 1})}
-                              className="w-full px-3 py-2 bg-sky-950-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">
-                              Nb Véhicules
-                            </label>
-                            <input
-                              type="number"
-                              min="0"
-                              value={formData.nb_vehicles}
-                              onChange={(e) => setFormData({...formData, nb_vehicles: parseInt(e.target.value) || 0})}
-                              className="w-full px-3 py-2 bg-sky-950-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Prix Total (€) *
-                          </label>
-                          <input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            required
-                            value={formData.total_price}
-                            onChange={(e) => setFormData({...formData, total_price: parseFloat(e.target.value) || 0})}
-                            className="w-full px-3 py-2 bg-sky-950-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Statut *
-                          </label>
-                          <select
-                            required
-                            value={formData.status}
-                            onChange={(e) => setFormData({...formData, status: e.target.value})}
-                            className="w-full px-3 py-2 bg-sky-950-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          >
-                            <option value="pending">En attente</option>
-                            <option value="confirmed">Confirmée</option>
-                            <option value="cancelled">Annulée</option>
-                            <option value="completed">Terminée</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="flex space-x-3 pt-4">
-                        <button
-                          type="button"
-                          onClick={closeModal}
-                          className="flex-1 bg-sky-950-700 hover:bg-sky-950-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
-                        >
-                          Annuler
-                        </button>
-                        <button
-                          type="submit"
-                          className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200"
-                        >
-                          Modifier
-                        </button>
-                      </div>
-                    </form>
                   </>
                 )}
               </div>
