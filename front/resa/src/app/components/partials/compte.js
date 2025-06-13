@@ -32,15 +32,12 @@ export default function Compte() {
     <Dropdown>
       <DropdownTrigger>
       <Button variant="bordered" className="cursor-pointer px-0">
-  <div className="border-2 border-[#e76f51] px-4 py-2 rounded-full bg-white flex items-center relative">
-      <p className="text-2xl text-sky-950 font-black">{initial}</p>
-      {isAdmin && (
-          <span className="absolute -bottom-2 -right-4 bg-blue-500 text-white text-[10px] font-bold px-2 rounded shadow-md">
-                Admin
-              </span>
-      )}
-  </div>
-</Button>
+        <div className="border-2 border-[#e76f51] px-4 py-2 rounded-full bg-white flex items-center relative">
+          <p className="text-2xl text-sky-950 font-black">M</p>
+          <span className="absolute -bottom-2 -right-4 bg-blue-500 text-white text-[10px] font-bold px-2  rounded shadow-md">Admin</span>
+        </div>
+      </Button>
+
 
       </DropdownTrigger>
       <DropdownMenu aria-label="Static Actions" variant="faded" className="w-50 bg-sky-950 py-4 px-2 rounded-2xl shadow-xl/30">

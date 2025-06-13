@@ -70,7 +70,7 @@ export default function UserManager() {
 
       <table className="w-full border mt-6">
         <thead>
-          <tr className="bg-gray-200">
+          <tr className="bg-sky-950">
             <th className="p-2 border">Nom</th>
             <th className="p-2 border">Email</th>
             <th className="p-2 border">Rôle</th>

@@ -28,7 +28,7 @@ export default function FerryDashboard() {
 
   return (
     <div>
-      <div className="mb-6 space-y-2">
+      <div className="mb-6 space-y-2 bg-sky-950">
         <input
           type="text"
           name="name"
@@ -58,9 +58,9 @@ export default function FerryDashboard() {
         </button>
       </div>
 
-      <table className="w-full table-auto border-collapse">
+      <table className="w-full table-auto ">
         <thead>
-          <tr className="bg-gray-200 text-left">
+          <tr className="bg-sky-950 rounded-md text-left">
             <th className="border p-2">Nom</th>
             <th className="border p-2">Destination</th>
             <th className="border p-2">Prix</th>
@@ -69,7 +69,7 @@ export default function FerryDashboard() {
         </thead>
         <tbody>
           {ferries.map((ferry) => (
-            <tr key={ferry.id} className="bg-white">
+            <tr key={ferry.id} className="bg-sky-950/70 hover:bg-sky-900 transition-colors">
               <td className="border p-2">{ferry.name}</td>
               <td className="border p-2">{ferry.destination}</td>
               <td className="border p-2">{ferry.price.toFixed(2)}€</td>
