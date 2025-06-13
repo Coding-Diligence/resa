@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
-// Données de test pour un utilisateur connecté (Marie Dubois)
 const USER_INFO = {
   id: 1,
   name: "Marie Dubois",
@@ -448,7 +447,7 @@ export default function MyReservations() {
                     placeholder="Rechercher par ferry, destination, référence..."
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-sky-900 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-3 bg-sky-950/70 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
@@ -495,7 +494,7 @@ export default function MyReservations() {
 
           {/* Liste des réservations */}
           {filteredAndSortedReservations.length === 0 ? (
-            <div className="bg-sky-900 rounded-lg p-8 text-center">
+            <div className="bg-sky-950/70 rounded-lg p-8 text-center">
               <svg className="w-16 h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
               </svg>
@@ -525,14 +524,14 @@ export default function MyReservations() {
               {filteredAndSortedReservations.map((reservation, index) => (
                 <div 
                   key={reservation.id}
-                  className="bg-sky-900 rounded-lg border border-gray-700 hover:border-gray-600 transition-all duration-200 overflow-hidden"
+                  className="bg-sky-950/70 rounded-lg border border-gray-700 hover:border-gray-600 transition-all duration-200 overflow-hidden"
                   style={{
                     animationDelay: `${index * 100}ms`,
                     animation: 'slideIn 0.3s ease-out forwards'
                   }}
                 >
                   {/* En-tête de la carte */}
-                  <div className="bg-sky-700/50 px-6 py-4 border-b border-gray-700">
+                  <div className="bg-sky-950/50 px-6 py-4 border-b border-gray-700">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
@@ -563,7 +562,7 @@ export default function MyReservations() {
                           <span className="text-blue-400">🗺️</span>
                           Itinéraire
                         </h4>
-                        <div className="bg-sky-700/30 rounded-lg p-4">
+                        <div className="bg-sky-950/30 rounded-lg p-4">
                           <div className="flex items-center justify-between text-sm">
                             <div className="text-center">
                               <div className="text-white font-medium">{reservation.departure_port}</div>
@@ -604,7 +603,7 @@ export default function MyReservations() {
                           <span className="text-purple-400">👥</span>
                           Réservation
                         </h4>
-                        <div className="bg-sky-700/30 rounded-lg p-4 space-y-2">
+                        <div className="bg-sky-950/30 rounded-lg p-4 space-y-2">
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-400">Passagers:</span>
                             <span className="text-white font-medium">{reservation.nb_passengers}</span>
@@ -634,7 +633,7 @@ export default function MyReservations() {
                           <span className="text-green-400">💰</span>
                           Prix & Actions
                         </h4>
-                        <div className="bg-sky-700/30 rounded-lg p-4">
+                        <div className="bg-sky-950/30 rounded-lg p-4">
                           <div className="text-center mb-4">
                             <div className="text-2xl font-bold text-white">
                               {formatPrice(reservation.total_price, reservation.currency)}
@@ -669,7 +668,7 @@ export default function MyReservations() {
           {/* Modal */}
           {showModal && selectedReservation && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 backdrop-blur-sm">
-              <div className="bg-sky-900 rounded-2xl p-8 max-w-2xl w-full mx-4 border border-gray-700 shadow-2xl max-h-[90vh] overflow-y-auto">
+              <div className="bg-sky-950/70 rounded-2xl p-8 max-w-2xl w-full mx-4 border border-gray-700 shadow-2xl max-h-[90vh] overflow-y-auto">
                 
                 {/* Mode Affichage détaillé */}
                 {modalMode === 'view' && (
@@ -687,7 +686,7 @@ export default function MyReservations() {
 
                     <div className="space-y-6">
                       {/* Itinéraire détaillé */}
-                      <div className="bg-sky-700 rounded-lg p-5">
+                      <div className="bg-sky-950 rounded-lg p-5">
                         <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
                           <span className="text-blue-400">🗺️</span>
                           Itinéraire complet
@@ -715,7 +714,7 @@ export default function MyReservations() {
                       </div>
 
                       {/* Détails de la réservation */}
-                      <div className="bg-sky-700 rounded-lg p-5">
+                      <div className="bg-sky-950 rounded-lg p-5">
                         <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
                           <span className="text-purple-400">🎫</span>
                           Détails de la réservation
@@ -749,7 +748,7 @@ export default function MyReservations() {
                       </div>
 
                       {/* Informations de paiement */}
-                      <div className="bg-sky-700 rounded-lg p-5">
+                      <div className="bg-sky-950 rounded-lg p-5">
                         <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
                           <span className="text-green-400">💳</span>
                           Paiement
@@ -771,7 +770,7 @@ export default function MyReservations() {
                     <div className="mt-6">
                       <button
                         onClick={closeModal}
-                        className="w-full bg-sky-700 hover:bg-sky-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
+                        className="w-full bg-sky-950 hover:bg-sky-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
                       >
                         Fermer
                       </button>
@@ -792,7 +791,7 @@ export default function MyReservations() {
                       <p className="text-gray-400">Ferry {selectedReservation.ferry_name}</p>
                     </div>
 
-                    <div className="bg-sky-700 rounded-lg p-4 mb-6 space-y-3">
+                    <div className="bg-sky-950 rounded-lg p-4 mb-6 space-y-3">
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-400">Référence:</span>
                         <span className="text-white font-mono">{selectedReservation.booking_reference}</span>
@@ -826,7 +825,7 @@ export default function MyReservations() {
                     <div className="flex space-x-3">
                       <button
                         onClick={closeModal}
-                        className="flex-1 bg-sky-700 hover:bg-sky-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
+                        className="flex-1 bg-sky-950 hover:bg-sky-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
                       >
                         Garder ma réservation
                       </button>
