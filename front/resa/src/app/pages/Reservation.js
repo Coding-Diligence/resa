@@ -35,13 +35,18 @@ const [tempCatCount, setTempCatCount] = useState(0);
 const [tempDogCount, setTempDogCount] = useState(0);
 
 const [showCalendar, setShowCalendar] = useState(false);
-const [dateRange, setDateRange] = useState([
-  {
-    startDate: new Date(),
-    endDate: new Date(),
-    key: 'selection'
-  }
-]);
+    const [dateRange, setDateRange] = useState(null);
+
+    useEffect(() => {
+        setDateRange([
+            {
+                startDate: new Date(),
+                endDate: new Date(),
+                key: 'selection',
+            },
+        ]);
+    }, []);
+
 const calendarRef = useRef(null);
 const containerRef = useRef(null);
 
@@ -62,30 +67,99 @@ useEffect(() => {
   };
 }, []);
 
+    const [routes, setRoutes] = useState([]);
 
-  const routes = [
-    { from: "Toulon", to: "Ajaccio", countryFrom: "France", countryTo: "Corse" },
-    { from: "Ajaccio", to: "Toulon", countryFrom: "Corse", countryTo: "France" },
-    { from: "Marseille", to: "Nice", countryFrom: "France", countryTo: "France" },
-    { from: "Nice", to: "Marseille", countryFrom: "France", countryTo: "France" },
-  ];
+    useEffect(() => {
+        const fetchDestinations = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) return;
 
-  const filteredRoutes = routes.filter((route) =>
+            try {
+                const response = await fetch("http://localhost:8080/api/destinations", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const data = await response.json();
+
+                if (!Array.isArray(data)) {
+                    console.error("Format de données inattendu :", data);
+                    return;
+                }
+
+                setRoutes(data.map((d) => ({
+                    from: d.departurePort,
+                    to: d.arrivalPort,
+                    countryFrom: d.countryFrom,
+                    countryTo: d.countryTo,
+                })));
+            } catch (error) {
+                console.error("Erreur lors de la récupération des destinations :", error);
+            }
+        };
+
+        fetchDestinations();
+    }, []);
+
+
+    const filteredRoutes = routes.filter((route) =>
     `${route.from} - ${route.to}`
       .toLowerCase()
       .includes(routeInput.toLowerCase())
   );
 
+
+
   return (
     <div className="w-full " ref={containerRef}>
       <form 
           className="w-3/4 p-6  mx-auto relative mt-10 bg-sky-950/70 rounded-2xl shadow-xl/30"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            console.log("Formulaire soumis avec :", Object.fromEntries(formData));
+          onSubmit={async (e) => {
+              e.preventDefault();
+
+              const [departurePort, arrivalPort] = routeInput.split(" - ") || [];
+              const selectedDate = dateRange[0].startDate;
+
+              const token = localStorage.getItem("token");
+
+              if (!departurePort || !arrivalPort || !selectedDate || !token) {
+                  alert("Veuillez remplir tous les champs nécessaires.");
+                  return;
+              }
+
+              try {
+                  const response = await fetch("http://localhost:8080/api/travels", {
+                      headers: {
+                          Authorization: `Bearer ${token}`,
+                      },
+                  });
+
+                  const travels = await response.json();
+
+                  const filteredTravels = travels.filter((t) =>
+                      t?.departure_port?.toLowerCase() === departurePort.toLowerCase() &&
+                      t?.arrival_port?.toLowerCase() === arrivalPort.toLowerCase()
+                  );
+
+                  const sortedByDate = filteredTravels.sort((a, b) => {
+                      const diffA = Math.abs(new Date(a.departure_time) - selectedDate);
+                      const diffB = Math.abs(new Date(b.departure_time) - selectedDate);
+                      return diffA - diffB;
+                  });
+
+                  console.log("✅ Voyages trouvés :", sortedByDate);
+
+                  // Optionnel : set dans un state pour afficher ensuite
+                  // setTravels(sortedByDate);
+
+              } catch (error) {
+                  console.error("❌ Erreur :", error);
+              }
           }}
-        >
+
+
+      >
 
         {/* type voyage */}
         <div className="flex items-center gap-4 text-white mb-4">
@@ -187,15 +261,18 @@ useEffect(() => {
         {/* Dates */}
         <div className="mb-6 relative">
   <label className="block text-sm font-bold text-gray-300 mb-2">Quand souhaitez-vous voyager ?</label>
-  <button
-    type="button"
-    onClick={() => setShowCalendar(!showCalendar)}
-    className="w-full p-2 border bg-white border-gray-300 rounded-md text-sky-950 text-left"
-  >
-    {`${dateRange[0].startDate.toLocaleDateString()} → ${dateRange[0].endDate.toLocaleDateString()}`}
-  </button>
+            {dateRange && (
+                <button
+                    type="button"
+                    onClick={() => setShowCalendar(!showCalendar)}
+                    className="w-full p-2 border bg-white border-gray-300 rounded-md text-sky-950 text-left"
+                >
+                    {`${dateRange[0].startDate.toLocaleDateString()} → ${dateRange[0].endDate.toLocaleDateString()}`}
+                </button>
+            )}
 
-  {showCalendar && (
+
+            {showCalendar && (
   <div ref={calendarRef} className="absolute z-10 mt-2">
     <DateRange
       editableDateInputs={true}

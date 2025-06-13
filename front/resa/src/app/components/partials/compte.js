@@ -1,15 +1,44 @@
 "use client";
-import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button} from "@heroui/react";
+import { useEffect, useState } from "react";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@heroui/react";
 import Link from "next/link";
 
+
 export default function Compte() {
-  return (
+    const [initial, setInitial] = useState("?");
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        try {
+            const userRaw = localStorage.getItem("user");
+            if (userRaw) {
+                const user = JSON.parse(userRaw);
+                const name = user?.name || "";
+                const roles = user?.roles || [];
+
+                if (name.length > 0) {
+                    setInitial(name.charAt(0).toUpperCase());
+                }
+                if (roles.includes("ROLE_ADMIN")) {
+                    setIsAdmin(true);
+                }
+            }
+        } catch (e) {
+            console.error("Erreur parsing localStorage", e);
+        }
+    }, []);
+
+    return (
     <Dropdown>
       <DropdownTrigger>
       <Button variant="bordered" className="cursor-pointer px-0">
   <div className="border-2 border-[#e76f51] px-4 py-2 rounded-full bg-white flex items-center relative">
-    <p className="text-2xl text-sky-950 font-black">Y</p>
-    <span className="absolute -bottom-2 -right-4 bg-blue-500 text-white text-[10px] font-bold px-2  rounded shadow-md">Admin</span>
+      <p className="text-2xl text-sky-950 font-black">{initial}</p>
+      {isAdmin && (
+          <span className="absolute -bottom-2 -right-4 bg-blue-500 text-white text-[10px] font-bold px-2 rounded shadow-md">
+                Admin
+              </span>
+      )}
   </div>
 </Button>
 
