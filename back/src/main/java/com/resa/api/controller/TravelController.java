@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.Map;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -89,4 +89,26 @@ public class TravelController {
         travelService.deleteTravel(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/search-round")
+    @Operation(summary = "Search for round trip travels", description = "Search by ports and dates, return nearest if no exact match.")
+    public ResponseEntity<?> searchRoundTrip(
+            @RequestParam String departurePort,
+            @RequestParam String arrivalPort,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime departureDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime returnDate
+    ) {
+        Travel departureTravel = travelService.findClosestTravel(departureDate, departurePort, arrivalPort);
+
+        Travel returnTravel = null;
+        if (returnDate != null) {
+            returnTravel = travelService.findClosestTravel(returnDate, arrivalPort, departurePort);
+        }
+
+        return ResponseEntity.ok(
+                Map.of("departure", departureTravel, "return", returnTravel)
+        );
+    }
+
+
 }

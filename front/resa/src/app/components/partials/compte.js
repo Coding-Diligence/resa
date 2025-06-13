@@ -1,9 +1,34 @@
 "use client";
-import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button} from "@heroui/react";
+import { useEffect, useState } from "react";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@heroui/react";
 import Link from "next/link";
 
+
 export default function Compte() {
-  return (
+    const [initial, setInitial] = useState("?");
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        try {
+            const userRaw = localStorage.getItem("user");
+            if (userRaw) {
+                const user = JSON.parse(userRaw);
+                const name = user?.name || "";
+                const roles = user?.roles || [];
+
+                if (name.length > 0) {
+                    setInitial(name.charAt(0).toUpperCase());
+                }
+                if (roles.includes("ROLE_ADMIN")) {
+                    setIsAdmin(true);
+                }
+            }
+        } catch (e) {
+            console.error("Erreur parsing localStorage", e);
+        }
+    }, []);
+
+    return (
     <Dropdown>
       <DropdownTrigger>
       <Button variant="bordered" className="cursor-pointer px-0">
@@ -12,6 +37,7 @@ export default function Compte() {
           <span className="absolute -bottom-2 -right-4 bg-blue-500 text-white text-[10px] font-bold px-2  rounded shadow-md">Admin</span>
         </div>
       </Button>
+
 
       </DropdownTrigger>
       <DropdownMenu aria-label="Static Actions" variant="faded" className="w-50 bg-sky-950 py-4 px-2 rounded-2xl shadow-xl/30">
