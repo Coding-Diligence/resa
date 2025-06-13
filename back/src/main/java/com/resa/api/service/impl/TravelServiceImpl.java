@@ -72,4 +72,22 @@ public class TravelServiceImpl implements TravelService {
     public List<Travel> getTravelsByBoat(Integer boatId) {
         return travelRepository.findByBoatId(boatId);
     }
+
+    @Override
+    public Travel findClosestTravel(LocalDateTime date, String departurePort, String arrivalPort) {
+        LocalDateTime before = date.minusHours(12);
+        LocalDateTime after = date.plusHours(12);
+
+        List<Travel> travels = travelRepository.findByDateAndPorts(before, after, departurePort, arrivalPort);
+
+        return travels.stream()
+                .min((a, b) -> {
+                    long diffA = Math.abs(a.getDepartureTime().until(date, java.time.temporal.ChronoUnit.MINUTES));
+                    long diffB = Math.abs(b.getDepartureTime().until(date, java.time.temporal.ChronoUnit.MINUTES));
+                    return Long.compare(diffA, diffB);
+                })
+                .orElse(null);
+    }
+
+
 }

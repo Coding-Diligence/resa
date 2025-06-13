@@ -14,4 +14,7 @@ public interface TravelService {
     List<Travel> getTravelsByArrivalPort(String port);
     List<Travel> getTravelsByDateRange(LocalDateTime startDate, LocalDateTime endDate);
     List<Travel> getTravelsByBoat(Integer boatId);
+    Travel findClosestTravel(LocalDateTime date, String departurePort, String arrivalPort);
+
+
 } 
